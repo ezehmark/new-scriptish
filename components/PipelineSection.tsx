@@ -7,15 +7,25 @@ interface PipelineNode {
   description: string;
 }
 
-function PipelineCircle({ node, index, isVisible }: { node: PipelineNode; index: number; isVisible: boolean }) {
+// Generate shade variations of the brand color (purple: oklch(0.621 0.153 301.1))
+const brandShades = [
+  'oklch(0.621 0.153 301.1)', // Original brand
+  'oklch(0.580 0.145 301.1)', // Darker shade 1
+  'oklch(0.540 0.138 301.1)', // Darker shade 2
+  'oklch(0.500 0.130 301.1)', // Darker shade 3
+  'oklch(0.460 0.122 301.1)', // Darker shade 4
+];
+
+function PipelineCircle({ node, index, isActivated }: { node: PipelineNode; index: number; isActivated: boolean }) {
   return (
     <div className="flex flex-col items-center">
       <div
-        className={`w-16 sm:w-20 lg:w-24 h-16 sm:h-20 lg:h-24 rounded-full border-2 flex items-center justify-center font-semibold text-sm sm:text-base lg:text-lg transition-all duration-700 ${
-          isVisible
-            ? 'border-brand bg-brand/10 text-brand shadow-lg shadow-brand/20 scale-100 opacity-100 blur-0'
-            : 'border-border/30 bg-background/50 text-foreground/40 scale-75 opacity-30 blur-sm'
-        }`}
+        className="w-16 sm:w-20 lg:w-24 h-16 sm:h-20 lg:h-24 rounded-full border-2 flex items-center justify-center font-semibold text-sm sm:text-base lg:text-lg transition-all duration-700 border-brand"
+        style={{
+          backgroundColor: isActivated ? brandShades[index] : 'white',
+          color: isActivated ? 'white' : 'oklch(0.30 0.005 106.7)',
+          boxShadow: isActivated ? `0 0 24px rgba(157, 78, 221, 0.3)` : 'none',
+        }}
       >
         {index + 1}
       </div>
@@ -26,8 +36,10 @@ function PipelineCircle({ node, index, isVisible }: { node: PipelineNode; index:
 }
 
 export default function PipelineSection() {
-  const [visibleNodes, setVisibleNodes] = useState<boolean[]>([]);
+  const [activeCircles, setActiveCircles] = useState<boolean[]>([]);
+  const [animatingLine, setAnimatingLine] = useState<{ from: number; to: number; progress: number } | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
 
   const pipelineNodes: PipelineNode[] = [
     { label: 'Patient Intake', description: 'Automated form submission' },
@@ -38,22 +50,12 @@ export default function PipelineSection() {
   ];
 
   useEffect(() => {
-    // Initialize all nodes as hidden
-    setVisibleNodes(new Array(pipelineNodes.length).fill(false));
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Stagger the reveal animation
-          pipelineNodes.forEach((_, index) => {
-            setTimeout(() => {
-              setVisibleNodes((prev) => {
-                const newVisible = [...prev];
-                newVisible[index] = true;
-                return newVisible;
-              });
-            }, index * 150);
-          });
+          // Start the pipeline animation sequence
+          setActiveCircles([true, false, false, false, false]);
+          animateSequence();
           observer.unobserve(entry.target);
         }
       },
@@ -68,8 +70,50 @@ export default function PipelineSection() {
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
       }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
   }, []);
+
+  const animateSequence = () => {
+    let currentIndex = 0;
+    const startNextAnimation = () => {
+      if (currentIndex < pipelineNodes.length - 1) {
+        animateLineToNextCircle(currentIndex, currentIndex + 1, () => {
+          currentIndex++;
+          setActiveCircles((prev) => {
+            const newActive = [...prev];
+            newActive[currentIndex] = true;
+            return newActive;
+          });
+          setTimeout(startNextAnimation, 300);
+        });
+      }
+    };
+    setTimeout(startNextAnimation, 800);
+  };
+
+  const animateLineToNextCircle = (fromIndex: number, toIndex: number, onComplete: () => void) => {
+    const duration = 800;
+    const startTime = Date.now();
+
+    const animateFrame = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      setAnimatingLine({ from: fromIndex, to: toIndex, progress });
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animateFrame);
+      } else {
+        setAnimatingLine(null);
+        onComplete();
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animateFrame);
+  };
 
   return (
     <section id="pipeline" ref={sectionRef} className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
@@ -89,8 +133,54 @@ export default function PipelineSection() {
         {/* Pipeline Visualization */}
         <div className="mt-12 sm:mt-16 lg:mt-20">
           <div className="relative flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4">
-            {/* Connecting lines */}
-            <div className="absolute top-8 sm:top-10 lg:top-12 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand/30 to-transparent pointer-events-none" />
+            {/* SVG for animated line */}
+            <svg
+              className="absolute top-8 sm:top-10 lg:top-12 left-0 right-0 h-0.5 pointer-events-none"
+              preserveAspectRatio="none"
+              viewBox="0 0 1000 2"
+              style={{ width: '100%', height: '2px' }}
+            >
+              {/* Static baseline */}
+              <line x1="0" y1="1" x2="1000" y2="1" stroke="currentColor" strokeWidth="1" opacity="0.15" />
+
+              {/* Animated connecting line with glow */}
+              {animatingLine && (
+                <>
+                  {/* Glow effect */}
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+
+                  {/* Animated line */}
+                  <line
+                    x1={`${(animatingLine.from / (pipelineNodes.length - 1)) * 1000}`}
+                    y1="1"
+                    x2={`${animatingLine.from / (pipelineNodes.length - 1) * 1000 + (animatingLine.to / (pipelineNodes.length - 1) - animatingLine.from / (pipelineNodes.length - 1)) * 1000 * animatingLine.progress}`}
+                    y2="1"
+                    stroke="oklch(0.621 0.153 301.1)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    filter="url(#glow)"
+                  />
+
+                  {/* Glowing particle head */}
+                  <circle
+                    cx={`${animatingLine.from / (pipelineNodes.length - 1) * 1000 + (animatingLine.to / (pipelineNodes.length - 1) - animatingLine.from / (pipelineNodes.length - 1)) * 1000 * animatingLine.progress}`}
+                    cy="1"
+                    r="4"
+                    fill="oklch(0.621 0.153 301.1)"
+                    filter="url(#glow)"
+                    style={{
+                      boxShadow: '0 0 12px oklch(0.621 0.153 301.1)',
+                    }}
+                  />
+                </>
+              )}
+            </svg>
 
             {/* Pipeline circles */}
             {pipelineNodes.map((node, index) => (
@@ -98,7 +188,7 @@ export default function PipelineSection() {
                 <PipelineCircle
                   node={node}
                   index={index}
-                  isVisible={visibleNodes[index] || false}
+                  isActivated={activeCircles[index] || false}
                 />
               </div>
             ))}
@@ -110,7 +200,7 @@ export default function PipelineSection() {
               <div
                 key={index}
                 className={`p-4 sm:p-6 rounded-lg border border-border/20 bg-card/30 backdrop-blur-sm transition-all duration-500 transform ${
-                  visibleNodes[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                  activeCircles[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
               >
                 <div className="flex items-center gap-3 mb-3">
