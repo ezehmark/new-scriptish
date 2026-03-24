@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,9 +36,9 @@ export default function TopNav() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button className="px-6 py-2 rounded-lg bg-brand text-white font-semibold hover:opacity-90 transition-opacity text-sm lg:text-base">
+            <Button variant="default" size="default">
               Book Demo
-            </button>
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -66,9 +67,9 @@ export default function TopNav() {
             <Link href="#pricing" className="block text-foreground/80 hover:text-brand py-2 transition-colors">
               Pricing
             </Link>
-            <button className="w-full px-6 py-2 rounded-lg bg-brand text-white font-semibold hover:opacity-90 transition-opacity mt-4">
+            <Button variant="default" size="default" className="w-full mt-4">
               Book Demo
-            </button>
+            </Button>
           </div>
         )}
       </div>

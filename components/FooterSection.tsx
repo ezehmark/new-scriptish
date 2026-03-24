@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function FooterSection() {
   return (
@@ -15,12 +16,12 @@ export default function FooterSection() {
             Join hundreds of clinics already automating their operations with Scriptish. Get a personalized demo today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="px-8 py-3 sm:py-4 rounded-lg bg-brand text-white font-semibold hover:opacity-90 transition-opacity text-base sm:text-lg">
+            <Button variant="default" size="lg">
               Schedule Demo
-            </button>
-            <button className="px-8 py-3 sm:py-4 rounded-lg border border-brand text-brand font-semibold hover:bg-brand/5 transition-colors text-base sm:text-lg">
+            </Button>
+            <Button variant="outline" size="lg">
               View Pricing
-            </button>
+            </Button>
           </div>
         </div>
 

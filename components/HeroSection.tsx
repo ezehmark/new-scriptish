@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -129,12 +130,12 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-            <button className="w-full sm:w-auto px-8 py-3 sm:py-4 rounded-lg bg-brand text-white font-semibold hover:opacity-90 transition-opacity text-base sm:text-lg">
+            <Button variant="default" size="lg" className="w-full sm:w-auto">
               Book a Demo
-            </button>
-            <button className="w-full sm:w-auto px-8 py-3 sm:py-4 rounded-lg border border-brand text-brand font-semibold hover:bg-brand/5 transition-colors text-base sm:text-lg">
+            </Button>
+            <Button variant="outline" size="lg" className="w-full sm:w-auto">
               Learn More
-            </button>
+            </Button>
           </div>
 
           {/* Stats */}
