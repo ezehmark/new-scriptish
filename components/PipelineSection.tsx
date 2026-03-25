@@ -103,7 +103,7 @@ export default function PipelineSection() {
   };
 
   const animateLineToNextCircle = (fromIndex: number, toIndex: number, onComplete: () => void) => {
-    const duration = 800;
+    const duration = 1000;
     const startTime = Date.now();
 
     const animateFrame = () => {

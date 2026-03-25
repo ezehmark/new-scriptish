@@ -1,6 +1,8 @@
 'use client';
 
 import { CheckIcon } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface ProgressIndicatorProps {
   currentStep: number;
@@ -13,12 +15,27 @@ export default function ProgressIndicator({
   totalSteps,
   stepLabels,
 }: ProgressIndicatorProps) {
+
+   //disable progressive bar on mobile view
+
+  const[isMobile,setIsMobile]=useState(false);
+
+  const pathname = usePathname();
+
+  useEffect(()=>{
+    if(typeof window !== 'undefined'){
+      if(window.innerWidth<768){
+        setIsMobile(true)
+
+      }
+    }
+  },[pathname])
   return (
-    <div className="w-full mb-8 sm:mb-12">
+    <div className="w-full mb-8 sm:mb-12 fixed md:px-20 bg-brand backdrop-blur-md top-8 md:top-0 mx-auto left-0 right-0 self-center mt-8 md:mt-0">
       {/* Progress bar background */}
-      <div className="h-1 bg-border/20 rounded-full overflow-hidden mb-6 sm:mb-8">
+      <div className="h-1 hidden md:block bg-border/20 rounded-full overflow-hidden mb-6 sm:mb-8">
         <div
-          className="h-full bg-gradient-to-r from-brand to-accent transition-all duration-500"
+          className="h-full bg-gradient-to-r from-brand to-accent rounded-lg transition-all duration-500"
           style={{ width: `${(currentStep / totalSteps) * 100}%` }}
         />
       </div>

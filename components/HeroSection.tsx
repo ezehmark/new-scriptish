@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export default function HeroSection() {
@@ -99,28 +99,65 @@ export default function HeroSection() {
     };
   }, []);
 
+  const highlights =[{name:'Patient Referral',color:'purple-500'}, 
+    {name:'Insurance Verification',color:'green-500'},
+    {name:'Prio Authorization',color:'orange-500'},
+    {name:'Automated Scheduling',color:'yellow-800'}, 
+    {name:'Agentic Follow-Up',color:'accent'},
+    {name:'Seamless Infusion',color:'blue-500'}]
+
+  const[highlight,setHighlight]=useState('');
+  const[color,setColor]=useState('')
+
+  useEffect(()=>{
+    let count = 1;
+    let interval;
+    setHighlight(highlights[0].name);
+    setColor(highlights[0].color);
+    const cycleHighlights =()=>{
+      interval = setInterval(()=>{
+        setHighlight(highlights[count].name);
+        setColor(highlights[count].color)
+        count = (count +1) %highlights.length;
+        
+
+      },5000)
+
+    }
+   cycleHighlights();
+    //return ()=>clearInterval(interval)
+  },[])
+
   return (
-    <section className="relative w-full pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
+    <section className="relative w-full pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden ">
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
       />
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-background/40 via-background/30 to-primary/15  dark:bg-gray-800 moveBg" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
         <div className="text-center">
-          <div className="mb-6 sm:mb-8">
-            <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs sm:text-sm font-semibold">
-              ✨ Modern Healthcare Automation
-            </span>
+        <div className="mb-6 sm:mb-8 h-[100px] md:-mt-10 items-center justify-center relative flex overflow-hidden">
+          
+          
+          {highlight&&<div className='flex items-center h-[40px] moveHighlight -top-[100px] rounded-full px-[2px] relative overflow-hidden justify-center'>
+            <div className='h-[500%] absolute rotateInner w-[200%] bg-gradient-to-tr  from-transparent via-transparent to-primary'/>
+            <div className={`text-center items-center justify-center flex h-[38px] bg-accent/20 text-accent z-[400] rounded-full  self-center px-3 sm:px-4 py-1.5 sm:py-2 bg-brand/10 text-brand text-xs sm:text-sm font-semibold`}>
+              {highlight}
+            </div>
+
+            </div>}
+
+
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-4 sm:mb-6 text-balance leading-tight">
-            Medical Operations,{' '}
-            <span className="bg-gradient-to-r from-brand via-accent to-brand bg-clip-text text-transparent">
+            Infusion Operations,{' '}
+            <span className="bg-gradient-to-r from-brand via-accent to-brand bg-clip-text enlargeBgText text-transparent">
               Simplified
             </span>
           </h1>
@@ -129,14 +166,7 @@ export default function HeroSection() {
             Scriptish automates insurance verification, prior authorizations, and patient intake for IV therapy, ketamine, NAD+, and infusion clinics.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-            <Button variant="default" size="lg" className="w-full sm:w-auto">
-              Book a Demo
-            </Button>
-            <Button variant="outline" size="lg" className="w-full sm:w-auto">
-              Learn More
-            </Button>
-          </div>
+         
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 sm:gap-8 mt-12 sm:mt-20 pt-12 sm:pt-20 border-t border-border/20">

@@ -8,7 +8,7 @@ export default function TopNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b border-border/20">
+    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-gradient-to-l from-background via-background/30 to-primary/10 border-b border-border/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
@@ -20,7 +20,7 @@ export default function TopNav() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <Link href="#features" className="text-foreground/80 hover:text-brand transition-colors text-sm lg:text-base">
+            <Link href="#features" className="text-chart-2 hover:text-brand transition-colors text-sm lg:text-base">
               Features
             </Link>
             <Link href="#testimonials" className="text-foreground/80 hover:text-brand transition-colors text-sm lg:text-base">

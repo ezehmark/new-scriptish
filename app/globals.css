@@ -3,6 +3,49 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes moveBg {
+  0% {
+    background-position: 200% 50%;}
+   20%{background-position:100% 0%}
+  
+  
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.moveBg{
+  animation: moveBg 2s ease infinite;
+}
+
+@keyframes moveHighlight {
+ 0%{transform: translateY(0px) scale(0.2)} 
+  20%{transform: translateY(110px) scale(0.8);}
+  30%{transform: translateY(110px) scale(1.5);}
+  80%{transform: translateY(110px) scale(1.5);}
+  90%{transform: translateY(110px)scale(0.7);}    
+   100%{transform: translateY(200px) scale(0.4);} 
+}
+
+.moveHighlight{
+  animation: moveHighlight 5s ease infinite;
+}
+
+@keyframes rotateInner {
+50%{transform: rotate(270deg);}  
+}
+.rotateInner{
+  animation: rotateInner 2s ease infinite;
+}
+
+@keyframes enlargeBg {
+  20%{background-position: 200 400;}
+  80% {background-size: 200%;
+  background-position: 100 200;}
+}
+.enlargBgText{
+animation: enlargeBg 2s ease infinite;
+}
 :root {
   /* Light mode */
   --bg: oklch(0.959 0.01 87.5);

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SignupHeader from '@/components/SignupHeader';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ClinicInfoForm, { ClinicInfo } from '@/components/ClinicInfoForm';
 import EligibilityForm, { EligibilityData } from '@/components/EligibilityForm';
 import AccountSetupForm, { AccountData } from '@/components/AccountSetupForm';
 import SuccessScreen from '@/components/SuccessScreen';
+import Link from 'next/link';
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -46,17 +47,21 @@ export default function RegisterPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <SignupHeader />
+ 
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+  return (
+    <div className="h-full bg-background pt-4 md:pt-18">
+        <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground via-gray-600 to-foreground bg-clip-text top-4 left-4 absolute fixed z-[500] text-transparent">
+            Register
+          </Link>
+
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-20 md:mt-2">
         {/* Progress Indicator */}
-        <ProgressIndicator
+        {<ProgressIndicator
           currentStep={currentStep}
           totalSteps={4}
           stepLabels={stepLabels}
-        />
+        />}
 
         {/* Step Content */}
         <div className="bg-card border border-border/20 rounded-lg sm:rounded-xl p-6 sm:p-8 lg:p-10">
@@ -102,7 +107,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-8 sm:mt-12 text-center text-sm text-muted-foreground">
+        <div className="mt-2 sm:mt-4 text-center text-sm text-muted-foreground">
           <p>
             Already have an account?{' '}
             <a href="/login" className="text-brand hover:underline font-semibold">

@@ -33,25 +33,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-background/50 to-primary/10 flex flex-col">
       {/* Header */}
-      <header className="border-b border-border/20 backdrop-blur-md bg-background/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-brand via-accent to-brand bg-clip-text text-transparent">
-            Scriptish
-          </Link>
-        </div>
-      </header>
+   
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12 sm:py-16">
+      <div className=" flex items-center justify-center px-4 py-24 sm:py-16">
+         
+          <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text top-8 left-8 absolute text-transparent">
+            Scriptish
+          </Link>
+        
         <div className="w-full max-w-md">
           {/* Card */}
-          <div className="bg-card border border-border/20 rounded-xl p-8 sm:p-10 shadow-lg">
+          <div className="bg-gradient-to-tr from-card via-card to-primary/10 border border-border/20 rounded-[20px] p-8 sm:p-10 shadow-lg">
             {/* Title */}
             <div className="mb-8">
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Welcome back</h1>
-              <p className="text-foreground/60 text-sm sm:text-base">Sign in to your Scriptish clinic account</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-accent mb-2">Welcome back</h1>
+              <p className="text-primary/90 text-sm sm:text-base">Sign in to your Scriptish clinic account</p>
             </div>
 
             {/* Form */}
@@ -85,7 +84,7 @@ export default function LoginPage() {
                   <Label htmlFor="password" className="text-sm font-medium text-foreground">
                     Password
                   </Label>
-                  <Link href="/forgot-password" className="text-xs sm:text-sm text-brand hover:text-brand/80 transition-colors">
+                  <Link href="/forgot-password" className="text-xs sm:text-sm text-primary hover:text-brand/80 transition-colors">
                     Forgot password?
                   </Link>
                 </div>
@@ -123,7 +122,7 @@ export default function LoginPage() {
                 type="submit"
                 variant="default"
                 size="lg"
-                className="w-full h-11 sm:h-12 mt-8"
+                className="w-full h-11 sm:h-12 mt-4"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -137,12 +136,12 @@ export default function LoginPage() {
               </Button>
 
               {/* Divider */}
-              <div className="relative py-4">
+              <div className="relative py-1">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border/20" />
+                  <div className="w-full  h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="px-2 bg-card text-foreground/60">Don't have an account?</span>
+                  <span className="px-2 bg-card text-foreground/80">Don't have an account?</span>
                 </div>
               </div>
 
@@ -152,7 +151,7 @@ export default function LoginPage() {
                   type="button"
                   variant="outline"
                   size="lg"
-                  className="w-full h-11 sm:h-12"
+                  className="w-full h-11 sm:h-12 bg-accent/50 text-white hover:bg-accent"
                   disabled={isLoading}
                 >
                   Create Account
