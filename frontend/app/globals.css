@@ -38,6 +38,14 @@
   animation: rotateInner 2s ease infinite;
 }
 
+@keyframes rotateInner2 {
+100%{transform: rotate(1turn);}  
+}
+.rotateInner2{
+  animation: rotateInner 4s ease infinite;
+}
+
+
 @keyframes enlargeBg {
   20%{background-position: 200 400;}
   80% {background-size: 200%;

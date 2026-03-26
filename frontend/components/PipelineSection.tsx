@@ -130,10 +130,10 @@ export default function PipelineSection() {
           <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs sm:text-sm font-semibold mb-4">
             Streamlined Workflow
           </span>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 text-balance">
-            How <span className="text-brand">Scriptish</span> Works
+          <h2 className="text-3xl sm:text-5xl bg-gradient-to-r from-accent via-primary to-accent bg-clip-text lg:text-6xl font-bold text-transparent text-foreground mb-4 sm:mb-6 text-balance">
+            How Scriptish Works
           </h2>
-          <p className="max-w-2xl mx-auto text-base sm:text-lg text-foreground/60 text-balance leading-relaxed">
+          <p className="max-w-2xl mx-auto text-primary text-base sm:text-lg text-foreground/60 text-balance leading-relaxed">
             Five simple steps to transform your clinic operations.
           </p>
         </div>

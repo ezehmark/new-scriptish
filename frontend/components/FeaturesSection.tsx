@@ -7,18 +7,37 @@ interface FeatureCardProps {
   title: string;
   description: string;
   isVisible: boolean;
+  bgColor: string;
+  textColor: string;
+  textColor2:string
 }
 
-function FeatureCard({ icon, title, description, isVisible }: FeatureCardProps) {
+function FeatureCard({ icon, title, description, isVisible, bgColor, textColor2, textColor }: FeatureCardProps) {
   return (
     <div
-      className={`p-6 sm:p-8 rounded-xl border border-border/20 bg-card/50 backdrop-blur-sm hover:border-brand/50 hover:bg-card/80 transition-all duration-500 transform ${
+      className={`feature-card relative p-6 sm:p-8 rounded-xl border backdrop-blur-md transition-all duration-500 transform overflow-hidden shadow-lg hover:shadow-none hover:bg-accent/50 cursor-pointer ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+        
+        borderColor: 'transparent',
+        '--hover-border-color': textColor,
+      } as React.CSSProperties}
     >
-      <div className="text-3xl sm:text-4xl mb-4">{icon}</div>
-      <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">{description}</p>
+      {/* Background icon */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+        <div className="text-8xl sm:text-9xl font-bold select-none">{icon}</div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="text-3xl sm:text-4xl mb-4">{icon}</div>
+        <h3 className="text-lg sm:text-xl font-semibold mb-2">{title}</h3>
+        <p className="text-sm sm:text-base opacity-90 leading-relaxed" 
+        style={{color:textColor2} as React.CSSProperties}>{description}</p>
+      </div>
     </div>
   );
 }
@@ -32,31 +51,49 @@ export default function FeaturesSection() {
       icon: '🔐',
       title: 'Insurance Verification',
       description: 'Real-time EDI 270/271 integration for instant patient coverage verification and eligibility checks.',
+      bgColor: 'hsla(301, 100%, 55%, 0.05)',
+      textColor: 'hsl(301, 100%, 45%)',
+      textColor2:'hsla(301, 100%, 45%, 0.7)'
     },
     {
       icon: '⚡',
       title: 'Prior Auth Automation',
       description: 'Automate the entire prior authorization process with intelligent workflow management.',
+      bgColor: 'hsla(186, 100%, 50%, 0.04)',
+      textColor: 'hsl(186, 100%, 35%)',
+      textColor2:'hsla(186, 100%, 35%, 0.7)'
     },
     {
       icon: '🏥',
       title: 'HIPAA Compliant',
       description: 'Enterprise-grade security with full HIPAA compliance and data encryption.',
+      bgColor: 'hsla(258, 85%, 55%, 0.04)',
+      textColor: 'hsl(258, 85%, 40%)',
+      textColor2:'hsla(258, 85%, 40%, 0.7)'
     },
     {
       icon: '📱',
       title: 'Patient Portal',
       description: 'Seamless patient intake and appointment management with branded white-label solutions.',
+      bgColor: 'hsla(41, 100%, 55%, 0.04)',
+      textColor: 'hsl(41, 100%, 40%)',
+      textColor2:'hsla(41, 100%, 40%, 0.7)'
     },
     {
       icon: '🤖',
       title: 'AI Voice Agent',
       description: 'Intelligent voice assistant for patient intake, appointments, and follow-ups.',
+      bgColor: 'hsla(15, 100%, 55%, 0.04)',
+      textColor: 'hsl(15, 100%, 40%)',
+      textColor2:'hsla(15, 100%, 40%, 0.7)'
     },
     {
       icon: '📊',
       title: 'Analytics Dashboard',
       description: 'Real-time insights into clinic operations, claims, and patient metrics.',
+      bgColor: 'hsla(165, 100%, 50%, 0.04)',
+      textColor: 'hsl(165, 100%, 30%)',
+      textColor2:'hsla(165, 100%, 30%, 0.7)'
     },
   ];
 
@@ -95,9 +132,14 @@ export default function FeaturesSection() {
     <section id="features" ref={sectionRef} className="py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-          <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs sm:text-sm font-semibold mb-4">
+          <div className='flex items-center h-[40px] w-[180px] mx-auto rounded-full px-[2px] relative overflow-hidden justify-center mb-4'
+          >
+            <div className='h-[500%] absolute rotateInner2 w-[200%] bg-gradient-to-tr  from-transparent via-transparent to-primary'/>
+            <div className={`text-center items-center justify-center flex h-[38px] bg-background text-accent z-[400] rounded-full  self-center px-3 sm:px-4 py-1.5 sm:py-2 bg-brand/10 text-brand text-xs sm:text-sm w-full font-semibold`}>
             Powerful Features
-          </span>
+            </div>
+
+            </div>
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 text-balance">
             Everything You Need to <span className="text-brand">Automate</span>
           </h2>
@@ -114,10 +156,19 @@ export default function FeaturesSection() {
               title={feature.title}
               description={feature.description}
               isVisible={visibleCards[index]}
+              bgColor={feature.bgColor}
+              textColor={feature.textColor}
+              textColor2={feature.textColor2}
             />
           ))}
         </div>
       </div>
+
+      <style jsx>{`
+        .feature-card:hover {
+          border-color: var(--hover-border-color) !important;
+        }
+      `}</style>
     </section>
   );
 }
