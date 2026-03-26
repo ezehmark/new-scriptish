@@ -48,9 +48,9 @@ export default function PipelineSection() {
   }, []);
 
   const pipelineNodes: PipelineNode[] = [
-    { label: 'Patient Intake', description: 'Automated form submission' },
+    { label: 'Patient Intake', description: 'form submission' },
     { label: 'Insurance Check', description: 'Real-time verification' },
-    { label: 'Prior Auth', description: 'Intelligent automation' },
+    { label: 'Prior Auth', description: 'Intelligent system' },
     { label: 'Approval', description: 'Instant confirmation' },
     { label: 'Schedule', description: 'Auto appointment booking' },
   ];
