@@ -16,7 +16,7 @@ interface FeatureCardProps {
 function FeatureCard({ icon, image, title, description, isVisible, bgColor, textColor2, textColor }: FeatureCardProps) {
   return (
     <div
-      className={`feature-card relative p-6 sm:p-8 rounded-xl border backdrop-blur-md transition-all duration-500 transform overflow-hidden shadow-lg hover:shadow-none hover:bg-accent/50 cursor-pointer ${
+      className={`feature-card relative p-6 sm:p-8 rounded-xl border backdrop-blur-md transition-all duration-500 transform overflow-hidden shadow-lg hover:shadow-none hover:bg-accent/50 cursor-pointer${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
       style={{

@@ -133,7 +133,7 @@ export default function FooterSection() {
         {/* Bottom Bar */}
         <div className="pt-8 sm:pt-12 border-t border-border/20 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs sm:text-sm text-foreground/60">
-            © 2024 Scriptish. All rights reserved.
+            © 2026 Scriptish. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs sm:text-sm">
             <Link href="#" className="text-foreground/60 hover:text-brand transition-colors">
