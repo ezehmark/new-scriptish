@@ -52,7 +52,7 @@ export default function RegisterPage() {
   return (
     <div className="h-full bg-background pt-4 md:pt-18">
         <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground via-gray-600 to-foreground bg-clip-text top-4 left-4 absolute fixed z-[500] text-transparent">
-            Register
+            Register Now
           </Link>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-20 md:mt-2">

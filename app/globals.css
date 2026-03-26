@@ -47,7 +47,7 @@
 animation: enlargeBg 2s ease infinite;
 }
 :root {
-  /* Light mode */
+  /* Light mode colorss */
   --bg: oklch(0.959 0.01 87.5);
   --text: oklch(0.30 0.005 106.7);
   --brand: oklch(0.621 0.153 301.1);
