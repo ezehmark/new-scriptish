@@ -10,9 +10,10 @@ interface FeatureCardProps {
   bgColor: string;
   textColor: string;
   textColor2:string
+  image:string
 }
 
-function FeatureCard({ icon, title, description, isVisible, bgColor, textColor2, textColor }: FeatureCardProps) {
+function FeatureCard({ icon, image, title, description, isVisible, bgColor, textColor2, textColor }: FeatureCardProps) {
   return (
     <div
       className={`feature-card relative p-6 sm:p-8 rounded-xl border backdrop-blur-md transition-all duration-500 transform overflow-hidden shadow-lg hover:shadow-none hover:bg-accent/50 cursor-pointer ${
@@ -28,12 +29,14 @@ function FeatureCard({ icon, title, description, isVisible, bgColor, textColor2,
     >
       {/* Background icon */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-        <div className="text-8xl sm:text-9xl font-bold select-none">{icon}</div>
+        {image?<img className='w-full h-full object-cover'
+        src={image}/>:
+        <div className="text-8xl sm:text-9xl font-bold select-none">{icon}</div>}
       </div>
 
       {/* Content */}
-      <div className="relative z-10">
-        <div className="text-3xl sm:text-4xl mb-4">{icon}</div>
+      <div className="relative z-10 py-4">
+        {/*<div className="text-3xl sm:text-4xl mb-4">{icon}</div>*/}
         <h3 className="text-lg sm:text-xl font-semibold mb-2">{title}</h3>
         <p className="text-sm sm:text-base opacity-90 leading-relaxed" 
         style={{color:textColor2} as React.CSSProperties}>{description}</p>
@@ -53,7 +56,8 @@ export default function FeaturesSection() {
       description: 'Real-time EDI 270/271 integration for instant patient coverage verification and eligibility checks.',
       bgColor: 'hsla(301, 100%, 55%, 0.05)',
       textColor: 'hsl(301, 100%, 45%)',
-      textColor2:'hsla(301, 100%, 45%, 0.7)'
+      textColor2:'hsla(301, 100%, 45%, 0.7)',
+      image:'/verifyScriptish.png'
     },
     {
       icon: '⚡',
