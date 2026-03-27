@@ -172,10 +172,10 @@ export default function TenantTypeSelection({ onSelect }: TenantTypeSelectionPro
       </div>
 
       {/* Trust Statement */}
-      <div className="mt-12 p-6 rounded-xl bg-primary/5 border border-accent/10">
+      <div className="mt-12 p-6 -mx-4 sm:-mx-0 rounded-xl bg-primary/5 border border-accent/10">
         <p className="text-center text-sm text-primary/80">
-          <span className="font-semibold text-primary">🔒 HIPAA Compliant</span> • All your information is encrypted and protected.<br />
-          <span className="font-semibold text-primary">✓ USA Infusion Clinics Only</span> • We serve USA-based organizations exclusively.
+          <span className="font-semibold text-primary">HIPAA Compliant</span> • All your information is encrypted and protected.<br />
+          <span className="font-semibold text-primary">Hospitals & Infusion Clinics</span> • We currently serve USA-based organizations only.
         </p>
       </div>
     </div>
