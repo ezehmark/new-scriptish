@@ -25,6 +25,11 @@ const {
 
 const registerClinic = async (input) => {
   // Check if clinic already exists
+  if (!prisma || !prisma.clinic) {
+    console.error('Prisma client or prisma.clinic is undefined', { prismaKeys: prisma && Object.keys(prisma) });
+    throw new Error('Prisma client not initialized (prisma.clinic is undefined)');
+  }
+
   const existingClinic = await prisma.clinic.findFirst({
     where: {
       OR: [
@@ -307,6 +312,11 @@ const resetPassword = async (input) => {
 
 const registerHospital = async (input) => {
   // Check if hospital already exists
+  if (!prisma || !prisma.hospital) {
+    console.error('Prisma client or prisma.hospital is undefined', { prismaKeys: prisma && Object.keys(prisma) });
+    throw new Error('Prisma client not initialized (prisma.hospital is undefined)');
+  }
+
   const existingHospital = await prisma.hospital.findFirst({
     where: {
       OR: [
