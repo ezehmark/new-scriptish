@@ -1,4 +1,4 @@
-const { verifyAccessToken } = require('../utils/jwt');
+const { verifyAccessToken, verifyTemporaryToken } = require('../utils/jwt');
 //define auth middlewares
 const authMiddleware = (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ const authMiddleware = (req, res, next) => {
       return;
     }
 
-    const payload = verifyAccessToken(token);
+    const payload = verifyTemporaryToken(token);
     if (!payload) {
       res.status(401).json({ error: 'Invalid or expired token' });
       return;

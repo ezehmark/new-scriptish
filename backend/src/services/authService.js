@@ -92,7 +92,7 @@ const registerClinic = async (input) => {
     // Send verification email
     const verificationCode = generateVerificationCode();
     storeVerificationToken(input.clinic.workEmail, verificationCode);
-    await sendVerificationEmail(input.clinic.workEmail, verificationCode);
+    //await sendVerificationEmail(input.clinic.workEmail, verificationCode);
   }
 
   const tokenPayload = {
@@ -377,7 +377,7 @@ const registerHospital = async (input) => {
     // Send verification email
     const verificationCode = generateVerificationCode();
     storeVerificationToken(input.hospital.workEmail, verificationCode);
-    await sendVerificationEmail(input.hospital.workEmail, verificationCode);
+    //await sendVerificationEmail(input.hospital.workEmail, verificationCode);
   }
 
   const tokenPayload = {
