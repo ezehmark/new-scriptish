@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: scriptish-db
+    environment:
+      POSTGRES_USER: scriptish_user
+      POSTGRES_PASSWORD: scriptish_password
+      POSTGRES_DB: scriptish_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: scriptish-backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://scriptish_user:scriptish_password@db:5432/scriptish_db
+      JWT_SECRET: your_jwt_secret_key_here
+      JWT_REFRESH_SECRET: your_jwt_refresh_secret_key_here
+      FRONTEND_URL: http://localhost:3000
+      NODE_ENV: development
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:

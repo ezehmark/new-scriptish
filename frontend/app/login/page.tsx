@@ -164,7 +164,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const user = localStorage.getItem('user');
-    setAuthorized(user === 'ezehmark');
+    setAuthorized(user !== 'ezehmark');
   }, []);
 
   if (authorized === null) return null;
@@ -200,7 +200,7 @@ export default function LoginPage() {
           <div className="bg-gradient-to-tr from-card via-card to-primary/10 border border-border/20 rounded-[20px] p-8 sm:p-10 shadow-lg">
             <div className="mb-8">
               <h1 className="text-2xl sm:text-3xl font-bold text-accent mb-2">Welcome back</h1>
-              <p className="text-primary/90 text-sm sm:text-base">Sign in to your Scriptish clinic account</p>
+              <p className="text-primary/90 text-sm sm:text-base">Sign in to your Scriptish account</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

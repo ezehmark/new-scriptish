@@ -1,0 +1,578 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import {
+  Building2,
+  Activity,
+  Users,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  TrendingUp,
+  Plus,
+  Eye,
+  MoreVertical,
+  Filter,
+  Search,
+  Pill,
+  Heart,
+  Zap,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+interface ReferralMetrics {
+  totalReferrals: number;
+  pendingVerification: number;
+  pendingPA: number;
+  scheduled: number;
+  completed: number;
+}
+
+interface ClinicPartner {
+  id: string;
+  name: string;
+  specialty: string;
+  address: string;
+  phone: string;
+  referralCount: number;
+  status: 'active' | 'pending' | 'inactive';
+  avatar?: string;
+}
+
+interface Referral {
+  id: string;
+  patientName: string;
+  patientDOB: string;
+  clinicName: string;
+  treatmentType: string;
+  status: 'new' | 'verifying' | 'pa_pending' | 'scheduled' | 'in_treatment' | 'completed';
+  referralDate: string;
+  urgency: 'routine' | 'urgent' | 'stat';
+  diagnosis: string;
+}
+
+const MOCK_METRICS: ReferralMetrics = {
+  totalReferrals: 47,
+  pendingVerification: 8,
+  pendingPA: 5,
+  scheduled: 12,
+  completed: 22,
+};
+
+const MOCK_CLINIC_PARTNERS: ClinicPartner[] = [
+  {
+    id: '1',
+    name: 'Bright Infusion Clinic',
+    specialty: 'IV Therapy',
+    address: '123 Medical Blvd, Chicago, IL',
+    phone: '312-555-0000',
+    referralCount: 18,
+    status: 'active',
+  },
+  {
+    id: '2',
+    name: 'Ketamine Wellness Center',
+    specialty: 'Ketamine Therapy',
+    address: '456 Wellness Ave, NYC, NY',
+    phone: '212-555-1111',
+    referralCount: 12,
+    status: 'active',
+  },
+  {
+    id: '3',
+    name: 'NAD+ Recovery Clinic',
+    specialty: 'NAD+ Therapy',
+    address: '789 Health St, LA, CA',
+    phone: '323-555-2222',
+    referralCount: 8,
+    status: 'pending',
+  },
+];
+
+const MOCK_REFERRALS: Referral[] = [
+  {
+    id: 'ref_001',
+    patientName: 'Mark Johnson',
+    patientDOB: '1985-03-15',
+    clinicName: 'Bright Infusion Clinic',
+    treatmentType: 'IV Therapy',
+    status: 'scheduled',
+    referralDate: '2026-03-20',
+    urgency: 'routine',
+    diagnosis: 'Chronic fatigue syndrome',
+  },
+  {
+    id: 'ref_002',
+    patientName: 'Sarah Williams',
+    patientDOB: '1992-07-22',
+    clinicName: 'Ketamine Wellness Center',
+    treatmentType: 'Ketamine Therapy',
+    status: 'pa_pending',
+    referralDate: '2026-03-21',
+    urgency: 'urgent',
+    diagnosis: 'Treatment-resistant depression',
+  },
+  {
+    id: 'ref_003',
+    patientName: 'David Brown',
+    patientDOB: '1978-11-08',
+    clinicName: 'NAD+ Recovery Clinic',
+    treatmentType: 'NAD+ Therapy',
+    status: 'verifying',
+    referralDate: '2026-03-22',
+    urgency: 'routine',
+    diagnosis: 'Mitochondrial dysfunction',
+  },
+  {
+    id: 'ref_004',
+    patientName: 'Jennifer Lee',
+    patientDOB: '1988-05-30',
+    clinicName: 'Bright Infusion Clinic',
+    treatmentType: 'IV Therapy',
+    status: 'completed',
+    referralDate: '2026-03-01',
+    urgency: 'routine',
+    diagnosis: 'Chronic pain management',
+  },
+];
+
+const getStatusLabel = (status: string) => {
+  const statusMap: Record<string, string> = {
+    new: 'New',
+    verifying: 'Verifying Insurance',
+    pa_pending: 'PA Pending',
+    scheduled: 'Scheduled',
+    in_treatment: 'In Treatment',
+    completed: 'Completed',
+  };
+  return statusMap[status] || status;
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'new':
+      return 'bg-blue-400/10 border-blue-400/30 text-blue-300';
+    case 'verifying':
+      return 'bg-yellow-400/10 border-yellow-400/30 text-yellow-300';
+    case 'pa_pending':
+      return 'bg-orange-400/10 border-orange-400/30 text-orange-300';
+    case 'scheduled':
+      return 'bg-cyan-400/10 border-cyan-400/30 text-cyan-300';
+    case 'in_treatment':
+      return 'bg-purple-400/10 border-purple-400/30 text-purple-300';
+    case 'completed':
+      return 'bg-green-400/10 border-green-400/30 text-green-300';
+    default:
+      return 'bg-gray-400/10 border-gray-400/30 text-gray-300';
+  }
+};
+
+const getUrgencyIcon = (urgency: string) => {
+  if (urgency === 'urgent' || urgency === 'stat') {
+    return <AlertCircle className="w-4 h-4 text-red-400" />;
+  }
+  return <Clock className="w-4 h-4 text-gray-400" />;
+};
+
+export default function ReferringHospitalDashboard() {
+  const [selectedClinic, setSelectedClinic] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [referrals, setReferrals] = useState<Referral[]>(MOCK_REFERRALS);
+
+  const filteredReferrals = referrals.filter((ref) => {
+    const matchesSearch =
+      ref.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ref.clinicName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !statusFilter || ref.status === statusFilter;
+    const matchesClinic = !selectedClinic || ref.clinicName === selectedClinic;
+    return matchesSearch && matchesStatus && matchesClinic;
+  });
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-border/30 bg-primary/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-2">
+                Referral Dashboard
+              </h1>
+              <p className="text-foreground/60">
+                Manage and track your referrals across partner clinics
+              </p>
+            </div>
+            <Button className="bg-accent hover:bg-accent/90 text-primary font-semibold gap-2 w-full sm:w-auto">
+              <Plus className="w-4 h-4" />
+              New Referral
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          {/* Total Referrals */}
+          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-accent/50 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(51, 211, 191, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center">
+                  <Activity className="w-6 h-6 text-accent" />
+                </div>
+                <TrendingUp className="w-5 h-5 text-green-400" />
+              </div>
+              <p className="text-foreground/60 text-sm mb-1">Total Referrals</p>
+              <p className="text-2xl font-bold text-accent">
+                {MOCK_METRICS.totalReferrals}
+              </p>
+            </div>
+          </div>
+
+          {/* Pending Verification */}
+          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-yellow-400/50 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(234, 179, 8, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-yellow-400/20 border border-yellow-400/30 flex items-center justify-center mb-4">
+                <Clock className="w-6 h-6 text-yellow-400" />
+              </div>
+              <p className="text-foreground/60 text-sm mb-1">Verifying Insurance</p>
+              <p className="text-2xl font-bold text-yellow-400">
+                {MOCK_METRICS.pendingVerification}
+              </p>
+            </div>
+          </div>
+
+          {/* PA Pending */}
+          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-orange-400/50 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(234, 88, 12, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-orange-400/20 border border-orange-400/30 flex items-center justify-center mb-4">
+                <AlertCircle className="w-6 h-6 text-orange-400" />
+              </div>
+              <p className="text-foreground/60 text-sm mb-1">PA Pending</p>
+              <p className="text-2xl font-bold text-orange-400">
+                {MOCK_METRICS.pendingPA}
+              </p>
+            </div>
+          </div>
+
+          {/* Scheduled */}
+          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-accent/50 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(51, 211, 191, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center mb-4">
+                <CheckCircle className="w-6 h-6 text-accent" />
+              </div>
+              <p className="text-foreground/60 text-sm mb-1">Scheduled</p>
+              <p className="text-2xl font-bold text-accent">
+                {MOCK_METRICS.scheduled}
+              </p>
+            </div>
+          </div>
+
+          {/* Completed */}
+          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-green-400/50 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(34, 197, 94, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-green-400/20 border border-green-400/30 flex items-center justify-center mb-4">
+                <CheckCircle className="w-6 h-6 text-green-400" />
+              </div>
+              <p className="text-foreground/60 text-sm mb-1">Completed</p>
+              <p className="text-2xl font-bold text-green-400">
+                {MOCK_METRICS.completed}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Clinic Partners */}
+          <div className="lg:col-span-1">
+            <div className="relative group">
+              <div
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"
+                style={{
+                  background:
+                    'radial-gradient(circle at top right, rgba(51, 211, 191, 0.2), transparent)',
+                }}
+              />
+              <Card className="relative z-10 border border-border/30 bg-primary/10 backdrop-blur-sm overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Building2 className="w-5 h-5 text-accent" />
+                    <h2 className="text-lg font-bold text-white">
+                      Partner Clinics
+                    </h2>
+                  </div>
+
+                  <div className="space-y-4">
+                    {MOCK_CLINIC_PARTNERS.map((clinic) => (
+                      <div
+                        key={clinic.id}
+                        className="group/clinic p-4 rounded-xl border border-border/20 bg-background/50 hover:border-accent/50 hover:bg-primary/20 transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground truncate">
+                              {clinic.name}
+                            </h3>
+                            <p className="text-xs text-foreground/50 truncate">
+                              {clinic.specialty}
+                            </p>
+                          </div>
+                          <div
+                            className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
+                              clinic.status === 'active'
+                                ? 'bg-green-400/20 text-green-300 border border-green-400/30'
+                                : clinic.status === 'pending'
+                                  ? 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/30'
+                                  : 'bg-gray-400/20 text-gray-300 border border-gray-400/30'
+                            }`}
+                          >
+                            {clinic.status}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-foreground/60">
+                            Refs: {clinic.referralCount}
+                          </span>
+                          <Eye className="w-4 h-4 text-accent opacity-0 group-hover/clinic:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    className="w-full mt-6 border-accent/30 hover:border-accent text-accent hover:bg-accent/10"
+                  >
+                    View All Partners
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          {/* Recent Referrals */}
+          <div className="lg:col-span-2">
+            <div className="relative group">
+              <div
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"
+                style={{
+                  background:
+                    'radial-gradient(circle at top right, rgba(51, 211, 191, 0.2), transparent)',
+                }}
+              />
+              <Card className="relative z-10 border border-border/30 bg-primary/10 backdrop-blur-sm">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-accent" />
+                      <h2 className="text-lg font-bold text-white">
+                        Recent Referrals
+                      </h2>
+                    </div>
+                    <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full border border-accent/30">
+                      {referrals.length} total
+                    </span>
+                  </div>
+
+                  {/* Filters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                    <Input
+                      placeholder="Search patient or clinic..."
+                      className="bg-background/50 border-border/30 text-foreground placeholder:text-foreground/40"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="bg-background/50 border-border/30 text-foreground">
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-900 border-border/30">
+                        <SelectItem value="">All Statuses</SelectItem>
+                        <SelectItem value="new">New</SelectItem>
+                        <SelectItem value="verifying">Verifying Insurance</SelectItem>
+                        <SelectItem value="pa_pending">PA Pending</SelectItem>
+                        <SelectItem value="scheduled">Scheduled</SelectItem>
+                        <SelectItem value="in_treatment">In Treatment</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={selectedClinic} onValueChange={setSelectedClinic}>
+                      <SelectTrigger className="bg-background/50 border-border/30 text-foreground">
+                        <SelectValue placeholder="Filter by clinic" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-900 border-border/30">
+                        <SelectItem value="">All Clinics</SelectItem>
+                        {MOCK_CLINIC_PARTNERS.map((clinic) => (
+                          <SelectItem key={clinic.id} value={clinic.name}>
+                            {clinic.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Referrals List */}
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {filteredReferrals.length > 0 ? (
+                      filteredReferrals.map((ref) => (
+                        <div
+                          key={ref.id}
+                          className="group/referral p-4 rounded-xl border border-border/20 bg-background/30 hover:border-accent/50 hover:bg-primary/30 transition-all cursor-pointer"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-foreground truncate">
+                                  {ref.patientName}
+                                </h3>
+                                {getUrgencyIcon(ref.urgency)}
+                              </div>
+                              <div className="text-xs text-foreground/50 space-y-1">
+                                <p>📅 DOB: {ref.patientDOB}</p>
+                                <p>🏥 {ref.clinicName}</p>
+                                <p>💊 {ref.treatmentType}</p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-2">
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                                  ref.status
+                                )}`}
+                              >
+                                {getStatusLabel(ref.status)}
+                              </span>
+                              <span className="text-xs text-foreground/40">
+                                {ref.referralDate}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-12">
+                        <AlertCircle className="w-8 h-8 text-foreground/40 mx-auto mb-2" />
+                        <p className="text-foreground/50">No referrals found</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Add Referral */}
+          <button className="group relative p-6 rounded-2xl border-2 border-border/30 hover:border-accent/50 hover:bg-primary/20 bg-primary/10 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(51, 211, 191, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10 text-center">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 mx-auto mb-4">
+                <Plus className="w-7 h-7 text-accent" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">New Referral</h3>
+              <p className="text-xs text-foreground/60">
+                Submit a new patient referral to partner clinics
+              </p>
+            </div>
+          </button>
+
+          {/* View Analytics */}
+          <button className="group relative p-6 rounded-2xl border-2 border-border/30 hover:border-accent/50 hover:bg-primary/20 bg-primary/10 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(51, 211, 191, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10 text-center">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 mx-auto mb-4">
+                <TrendingUp className="w-7 h-7 text-accent" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">Analytics</h3>
+              <p className="text-xs text-foreground/60">
+                View referral trends and clinic performance
+              </p>
+            </div>
+          </button>
+
+          {/* Manage Partners */}
+          <button className="group relative p-6 rounded-2xl border-2 border-border/30 hover:border-accent/50 hover:bg-primary/20 bg-primary/10 transition-all">
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
+              style={{
+                background:
+                  'radial-gradient(circle at top right, rgba(51, 211, 191, 0.1), transparent)',
+              }}
+            />
+            <div className="relative z-10 text-center">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-accent/20 border border-accent/30 mx-auto mb-4">
+                <Building2 className="w-7 h-7 text-accent" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">
+                Manage Partners
+              </h3>
+              <p className="text-xs text-foreground/60">
+                Add or manage your clinic partnerships
+              </p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

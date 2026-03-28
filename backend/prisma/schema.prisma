@@ -17,19 +17,19 @@ datasource db {
 model User {
   id                    String    @id @default(cuid())
   email                 String    @unique
-  passwordHash          String
-  firstName             String?
-  lastName              String?
+  passwordHash          String    @map("password_hash")
+  firstName             String?   @map("first_name")
+  lastName              String?   @map("last_name")
   role                  UserRole
   status                UserStatus
 
   // Clinic relationship (staff)
   clinic                Clinic?   @relation("ClinicStaff", fields: [clinicId], references: [id])
-  clinicId              String?
+  clinicId              String?   @map("clinic_id")
 
   // Patient relationship
   patient               Patient?  @relation("PatientUser", fields: [patientId], references: [id])
-  patientId             String?
+  patientId             String?   @map("patient_id")
 
   // Various staff roles
   assignedReferrals     Referral[] @relation("ReferringPhysician")
@@ -38,9 +38,9 @@ model User {
   // Portal chat/support
   portalMessages        PortalMessage[] @relation("StaffReplies")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  lastLogin             DateTime?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  lastLogin             DateTime? @map("last_login")
 
   @@index([clinicId])
   @@index([email])
@@ -74,33 +74,33 @@ enum UserStatus {
 model Clinic {
   id                    String    @id @default(cuid())
   name                  String
-  clinicType            ClinicType
+  clinicType            ClinicType @map("clinic_type")
 
   // Registration information
-  npiNumber             String    @unique @db.VarChar(10)
-  taxId                 String
-  stateLicenseNumber    String
+  npiNumber             String    @unique @db.VarChar(10) @map("npi_number")
+  taxId                 String @map("tax_id")
+  stateLicenseNumber    String @map("state_license_number")
 
   // Address
-  streetAddress         String
+  streetAddress         String @map("street_address")
   city                  String
   state                 String    @db.Char(2)
-  zipCode               String
+  zipCode               String @map("zip_code")
 
   // Contact
-  primaryPhone          String
-  workEmail             String    @unique
+  primaryPhone          String @map("primary_phone")
+  workEmail             String    @unique @map("work_email")
 
   // Clinic operations
-  infusionChairCount    Int
-  treatmentTypesOffered String[]
-  serviceArea           String[]?
+  infusionChairCount    Int @map("infusion_chair_count")
+  treatmentTypesOffered String[] @map("treatment_types_offered")
+  serviceArea           String[]? @map("service_area")
 
   // Platform status
   status                ClinicStatus
-  baaSignedAt           DateTime?
-  baaSignedBy           String?
-  activatedAt           DateTime?
+  baaSignedAt           DateTime? @map("baa_signed_at")
+  baaSignedBy           String? @map("baa_signed_by")
+  activatedAt           DateTime? @map("activated_at")
 
   // Relationships
   staff                 User[] @relation("ClinicStaff")
@@ -113,8 +113,8 @@ model Clinic {
   knowledgeBase         KnowledgeBase?
   callLogs              CallLog[]
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([npiNumber])
   @@index([state])
@@ -153,36 +153,36 @@ model Hospital {
   name                  String
 
   // Registration information
-  npiNumber             String    @unique @db.VarChar(10)
-  taxId                 String
-  stateLicenseNumber    String
+  npiNumber             String    @unique @db.VarChar(10) @map("npi_number")
+  taxId                 String @map("tax_id")
+  stateLicenseNumber    String @map("state_license_number")
 
   // Address
-  primaryOfficeAddress  String
+  primaryOfficeAddress  String @map("primary_office_address")
   city                  String
   state                 String    @db.Char(2)
-  zipCode               String
+  zipCode               String @map("zip_code")
 
   // Contact
-  primaryPhone          String
-  workEmail             String    @unique
+  primaryPhone          String @map("primary_phone")
+  workEmail             String    @unique @map("work_email")
 
   // Contact person
-  contactPersonFirstName String
-  contactPersonLastName String
-  contactPersonTitle    String
+  contactPersonFirstName String @map("contact_person_first_name")
+  contactPersonLastName String @map("contact_person_last_name")
+  contactPersonTitle    String @map("contact_person_title")
 
   // Platform status
   status                HospitalStatus
-  baaSignedAt           DateTime?
-  baaSignedBy           String?
-  activatedAt           DateTime?
+  baaSignedAt           DateTime? @map("baa_signed_at")
+  baaSignedBy           String? @map("baa_signed_by")
+  activatedAt           DateTime? @map("activated_at")
 
   // Relationships
   referralPhysicians    ReferralPhysicianHospital[]
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([npiNumber])
   @@index([state])
@@ -207,16 +207,16 @@ model ReferralPhysicianHospital {
   id                    String    @id @default(cuid())
 
   hospital              Hospital  @relation(fields: [hospitalId], references: [id])
-  hospitalId            String
+  hospitalId            String @map("hospital_id")
 
-  firstName             String
-  lastName              String
-  npiNumber             String    @unique @db.VarChar(10)
+  firstName             String @map("first_name")
+  lastName              String @map("last_name")
+  npiNumber             String    @unique @db.VarChar(10) @map("npi_number")
   specialty             String
-  contactEmail          String?
-  contactPhone          String?
+  contactEmail          String? @map("contact_email")
+  contactPhone          String? @map("contact_phone")
 
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime  @default(now()) @map("created_at")
 
   @@index([hospitalId])
   @@index([npiNumber])
@@ -231,23 +231,23 @@ model Patient {
   id                    String    @id @default(cuid())
 
   // Basic demographics
-  firstName             String
-  lastName              String
-  dateOfBirth           DateTime
+  firstName             String @map("first_name")
+  lastName              String @map("last_name")
+  dateOfBirth           DateTime @map("date_of_birth")
 
   // Contact
-  phoneNumber           String
-  emailAddress          String
+  phoneNumber           String @map("phone_number")
+  emailAddress          String @map("email_address")
 
   // Address
   address               String
   city                  String
   state                 String
-  zipCode               String
+  zipCode               String @map("zip_code")
 
   // Clinic relationship
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String
+  clinicId              String @map("clinic_id")
 
   // User account (optional - for patient portal login)
   user                  User?     @relation("PatientUser")
@@ -262,14 +262,14 @@ model Patient {
   appointments          Appointment[]
 
   // Pipeline status
-  pipelineStage         PipelineStage
+  pipelineStage         PipelineStage @map("pipeline_stage")
 
   // Follow-up tracking
-  lastFollowUpDate      DateTime?
-  nextFollowUpDueDate   DateTime?
+  lastFollowUpDate      DateTime? @map("last_follow_up_date")
+  nextFollowUpDueDate   DateTime? @map("next_follow_up_due_date")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([clinicId])
   @@index([emailAddress])
@@ -298,31 +298,31 @@ model Referral {
 
   // Patient
   patient               Patient   @relation(fields: [patientId], references: [id])
-  patientId             String
+  patientId             String @map("patient_id")
 
   // Clinic
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String
+  clinicId              String @map("clinic_id")
 
   // Referring physician
   referringPhysician    ReferringPhysician @relation(fields: [physicianId], references: [id])
-  physicianId           String
+  physicianId           String @map("physician_id")
 
   // Clinical details
-  primaryDiagnosis      String
-  diagnosisDescription  String
-  prescribedTreatment   String
-  urgencyLevel          UrgencyLevel
-  clinicalNotes         String?   @db.Text
+  primaryDiagnosis      String @map("primary_diagnosis")
+  diagnosisDescription  String @map("diagnosis_description")
+  prescribedTreatment   String @map("prescribed_treatment")
+  urgencyLevel          UrgencyLevel @map("urgency_level")
+  clinicalNotes         String?   @db.Text @map("clinical_notes")
 
   // Document handling
-  uploadedDocumentUrl   String?
+  uploadedDocumentUrl   String? @map("uploaded_document_url")
 
   // Status
   status                ReferralStatus
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@index([clinicId])
@@ -349,17 +349,17 @@ enum ReferralStatus {
 model ReferringPhysician {
   id                    String    @id @default(cuid())
 
-  firstName             String
-  lastName              String
-  npiNumber             String    @unique @db.VarChar(10)
+  firstName             String @map("first_name")
+  lastName              String @map("last_name")
+  npiNumber             String    @unique @db.VarChar(10) @map("npi_number")
 
   practice              String
-  practicePhone         String
+  practicePhone         String @map("practice_phone")
   specialty             String
 
   referrals             Referral[]
 
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime  @default(now()) @map("created_at")
 
   @@index([npiNumber])
   @@map("referring_physicians")
@@ -373,21 +373,21 @@ model HIPAAConsent {
   id                    String    @id @default(cuid())
 
   patient               Patient   @relation(fields: [patientId], references: [id])
-  patientId             String    @unique
+  patientId             String    @unique @map("patient_id")
 
   // Digital signature capture
-  signatureCaptured     Boolean   @default(false)
-  signedAt              DateTime?
-  signatureIpAddress    String?
-  signatureUserAgent    String?   @db.Text
+  signatureCaptured     Boolean   @default(false) @map("signature_captured")
+  signedAt              DateTime? @map("signed_at")
+  signatureIpAddress    String? @map("signature_ip_address")
+  signatureUserAgent    String?   @db.Text @map("signature_user_agent")
 
   // Consent document
-  consentDocumentUrl    String?
+  consentDocumentUrl    String? @map("consent_document_url")
 
   status                ConsentStatus
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@map("hipaa_consents")
@@ -409,67 +409,67 @@ model PatientIntakeForm {
   id                    String    @id @default(cuid())
 
   patient               Patient   @relation(fields: [patientId], references: [id])
-  patientId             String    @unique
+  patientId             String    @unique @map("patient_id")
 
-  treatmentType         ClinicType
+  treatmentType         ClinicType @map("treatment_type")
 
   // Common to all intake forms
-  knownAllergies        String?   @db.Text
-  currentMedications    String?   @db.Text
-  previousExperience    String?   @db.Text
+  knownAllergies        String?   @db.Text @map("known_allergies")
+  currentMedications    String?   @db.Text @map("current_medications")
+  previousExperience    String?   @db.Text @map("previous_experience")
 
   // IV Therapy specific
-  hydrationLevel        String?
-  bloodPressureHistory  String?
-  pregnancyStatus       Boolean?
+  hydrationLevel        String? @map("hydration_level")
+  bloodPressureHistory  String? @map("blood_pressure_history")
+  pregnancyStatus       Boolean? @map("pregnancy_status")
 
   // Ketamine specific
-  mentalHealthHistory   String?   @db.Text
-  psychiatricMedications String?
-  psychosisHistory      Boolean?
-  maniaHistory          Boolean?
-  substanceUseHistory   String?   @db.Text
-  supportSystemAvailable Boolean?
+  mentalHealthHistory   String?   @db.Text @map("mental_health_history")
+  psychiatricMedications String? @map("psychiatric_medications")
+  psychosisHistory      Boolean? @map("psychosis_history")
+  maniaHistory          Boolean? @map("mania_history")
+  substanceUseHistory   String?   @db.Text @map("substance_use_history")
+  supportSystemAvailable Boolean? @map("support_system_available")
 
   // NAD+ specific
-  currentSupplements    String?   @db.Text
-  cognitiveGoals        String?
-  energyBaseline        String?
-  liverFunctionHistory  String?
+  currentSupplements    String?   @db.Text @map("current_supplements")
+  cognitiveGoals        String? @map("cognitive_goals")
+  energyBaseline        String? @map("energy_baseline")
+  liverFunctionHistory  String? @map("liver_function_history")
 
   // Biologic specific
-  diagnosisForBiologic  String?
-  previousBiologicUse   Boolean?
-  tuberculosisScreening Boolean?
-  infectionHistory      String?   @db.Text
-  recentLabsUrl         String?
+  diagnosisForBiologic  String? @map("diagnosis_for_biologic")
+  previousBiologicUse   Boolean? @map("previous_biologic_use")
+  tuberculosisScreening Boolean? @map("tuberculosis_screening")
+  infectionHistory      String?   @db.Text @map("infection_history")
+  recentLabsUrl         String? @map("recent_labs_url")
 
   // Antibiotic specific
-  penicillinAllergy     Boolean?
-  cultureResultsUrl     String?
-  renalFunction         String?
-  ivAccessHistory       String?
+  penicillinAllergy     Boolean? @map("penicillin_allergy")
+  cultureResultsUrl     String? @map("culture_results_url")
+  renalFunction         String? @map("renal_function")
+  ivAccessHistory       String? @map("iv_access_history")
 
   // TRT / Hormone specific
-  recentBloodworkUrl    String?
-  currentHormoneTherapy String?
-  symptomsBeingTreated  String?   @db.Text
-  physicianClearanceUrl String?
+  recentBloodworkUrl    String? @map("recent_bloodwork_url")
+  currentHormoneTherapy String? @map("current_hormone_therapy")
+  symptomsBeingTreated  String?   @db.Text @map("symptoms_being_treated")
+  physicianClearanceUrl String? @map("physician_clearance_url")
 
   // Home infusion specific
-  homeEnvironmentNotes  String?   @db.Text
-  caregiverAvailable    Boolean?
-  ivAccessType          String?
-  refrigerationAvailable Boolean?
-  emergencyContactAtHome String?
+  homeEnvironmentNotes  String?   @db.Text @map("home_environment_notes")
+  caregiverAvailable    Boolean? @map("caregiver_available")
+  ivAccessType          String? @map("iv_access_type")
+  refrigerationAvailable Boolean? @map("refrigeration_available")
+  emergencyContactAtHome String? @map("emergency_contact_at_home")
 
   // Status
   status                FormStatus
 
-  completedAt           DateTime?
+  completedAt           DateTime? @map("completed_at")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@map("patient_intake_forms")
@@ -492,20 +492,20 @@ model InsuranceInformation {
   id                    String    @id @default(cuid())
 
   patient               Patient   @relation(fields: [patientId], references: [id])
-  patientId             String    @unique
+  patientId             String    @unique @map("patient_id")
 
   // Insurance details (from referral)
-  insuranceCarrier      String
-  memberID              String
-  groupNumber           String
-  planType              PlanType
+  insuranceCarrier      String @map("insurance_carrier")
+  memberID              String @map("member_id")
+  groupNumber           String @map("group_number")
+  planType              PlanType @map("plan_type")
 
   // Eligibility tracking
   verifications         InsuranceVerification[]
   latestVerification    InsuranceVerification? @relation("LatestVerification")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@index([memberID])
@@ -526,30 +526,30 @@ model InsuranceVerification {
   id                    String    @id @default(cuid())
 
   insurance             InsuranceInformation @relation(fields: [insuranceId], references: [id])
-  insuranceId           String
+  insuranceId           String @map("insurance_id")
 
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String
+  clinicId              String @map("clinic_id")
 
   // Verification details (EDI 271 response)
-  coverageActive        Boolean
-  infusionTherapyCovered Boolean
-  annualDeductible      Float?
-  deductibleMet         Float?
-  perVisitCopay         Float?
-  coinsurancePercentage Float?
+  coverageActive        Boolean @map("coverage_active")
+  infusionTherapyCovered Boolean @map("infusion_therapy_covered")
+  annualDeductible      Float? @map("annual_deductible")
+  deductibleMet         Float? @map("deductible_met")
+  perVisitCopay         Float? @map("per_visit_copay")
+  coinsurancePercentage Float? @map("coinsurance_percentage")
 
   // PA requirement
-  priorAuthRequired     Boolean
+  priorAuthRequired     Boolean @map("prior_auth_required")
 
   // Status
   status                VerificationStatus
-  failureReason         String?
+  failureReason         String? @map("failure_reason")
 
-  requestedAt           DateTime
-  respondedAt           DateTime?
+  requestedAt           DateTime @map("requested_at")
+  respondedAt           DateTime? @map("responded_at")
 
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime  @default(now()) @map("created_at")
 
   insurance_latest      InsuranceInformation? @relation("LatestVerification", fields: [id], references: [id])
 
@@ -575,35 +575,35 @@ model PriorAuthorization {
   id                    String    @id @default(cuid())
 
   patient               Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  patientId             String
+  patientId             String @map("patient_id")
 
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String
+  clinicId              String @map("clinic_id")
 
   // PA details
   diagnosis             String
-  prescribedDrug        String
-  requestedSessions     Int
+  prescribedDrug        String @map("prescribed_drug")
+  requestedSessions     Int @map("requested_sessions")
 
   // Insurance submission
-  covermymedsId         String?
-  insuranceSubmittedAt  DateTime
+  covermymedsId         String? @map("coverymeds_id")
+  insuranceSubmittedAt  DateTime @map("insurance_submitted_at")
 
   // PA decision
   status                PAuthStatus
-  approvalNumber        String?   @unique
-  approvalDate          DateTime?
-  expiryDate            DateTime?
+  approvalNumber        String?   @unique @map("approval_number")
+  approvalDate          DateTime? @map("approval_date")
+  expiryDate            DateTime? @map("expiry_date")
 
-  denialReason          String?   @db.Text
-  appealDeadline        DateTime?
+  denialReason          String?   @db.Text @map("denial_reason")
+  appealDeadline        DateTime? @map("appeal_deadline")
 
   // Session tracking
-  approvedSessionsUsed  Int       @default(0)
-  sessionsRemaining     Int?
+  approvedSessionsUsed  Int       @default(0) @map("approved_sessions_used")
+  sessionsRemaining     Int? @map("sessions_remaining")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@index([clinicId])
@@ -630,26 +630,26 @@ model Appointment {
   id                    String    @id @default(cuid())
 
   patient               Patient   @relation(fields: [patientId], references: [id])
-  patientId             String
+  patientId             String @map("patient_id")
 
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String
+  clinicId              String @map("clinic_id")
 
   // Appointment details
-  appointmentType       AppointmentType
-  scheduledDate         DateTime
-  scheduledStartTime    DateTime
-  scheduledEndTime      DateTime?
+  appointmentType       AppointmentType @map("appointment_type")
+  scheduledDate         DateTime @map("scheduled_date")
+  scheduledStartTime    DateTime @map("scheduled_start_time")
+  scheduledEndTime      DateTime? @map("scheduled_end_time")
 
   // Assignment
   assignedNurse         User?     @relation("AssignedStaff", fields: [assignedNurseId], references: [id])
-  assignedNurseId       String?
+  assignedNurseId       String? @map("assigned_nurse_id")
 
-  assignedChair         String?
-  homeAddress           String?
+  assignedChair         String? @map("assigned_chair")
+  homeAddress           String? @map("home_address")
 
   // Treatment info
-  treatmentType         String
+  treatmentType         String @map("treatment_type")
   drug                  String?
   dose                  String?
 
@@ -657,21 +657,21 @@ model Appointment {
   status                AppointmentStatus
 
   // Patient consent
-  consentFormSigned     Boolean   @default(false)
-  consentSignedAt       DateTime?
+  consentFormSigned     Boolean   @default(false) @map("consent_form_signed")
+  consentSignedAt       DateTime? @map("consent_signed_at")
 
   // Linked records
   treatment             TreatmentRecord?
   followUps             FollowUp[]
 
   // Reminders sent
-  confirmationSentAt    DateTime?
-  reminder48hSentAt     DateTime?
-  reminder24hSentAt     DateTime?
-  reminder2hSentAt      DateTime?
+  confirmationSentAt    DateTime? @map("confirmation_sent_at")
+  reminder48hSentAt     DateTime? @map("reminder_48h_sent_at")
+  reminder24hSentAt     DateTime? @map("reminder_24h_sent_at")
+  reminder2hSentAt      DateTime? @map("reminder_2h_sent_at")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@index([clinicId])
@@ -707,39 +707,39 @@ model TreatmentRecord {
   id                    String    @id @default(cuid())
 
   appointment           Appointment @relation(fields: [appointmentId], references: [id])
-  appointmentId         String    @unique
+  appointmentId         String    @unique @map("appointment_id")
 
   // Drug administration
-  drugName              String
+  drugName              String @map("drug_name")
   dose                  String
   route                 String
-  lot_batch_number      String?
+  lot_batch_number      String? @map("lot_batch_number")
 
   // Timing
-  startTime             DateTime
-  endTime               DateTime
-  duration_minutes      Int
+  startTime             DateTime @map("start_time")
+  endTime               DateTime @map("end_time")
+  duration_minutes      Int @map("duration_minutes")
 
   // Admin provider
-  administeringProvider String
+  administeringProvider String @map("administering_provider")
 
   // Session tracking
-  sessionNumber         Int
-  totalSessionsPlanned  Int?
+  sessionNumber         Int @map("session_number")
+  totalSessionsPlanned  Int? @map("total_sessions_planned")
 
   // Clinical observations
-  preInfusionVitals     String?   @db.Text
-  postInfusionVitals    String?   @db.Text
+  preInfusionVitals     String?   @db.Text @map("pre_infusion_vitals")
+  postInfusionVitals    String?   @db.Text @map("post_infusion_vitals")
 
-  adverseReactions      String?   @db.Text
-  clinicalNotes         String?   @db.Text
-  deviationsFromProtocol String?  @db.Text
+  adverseReactions      String?   @db.Text @map("adverse_reactions")
+  clinicalNotes         String?   @db.Text @map("clinical_notes")
+  deviationsFromProtocol String?  @db.Text @map("deviations_from_protocol")
 
   // Status
   status                TreatmentStatus
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([appointmentId])
   @@map("treatment_records")
@@ -761,29 +761,29 @@ model FollowUp {
   id                    String    @id @default(cuid())
 
   appointment           Appointment @relation(fields: [appointmentId], references: [id])
-  appointmentId         String
+  appointmentId         String @map("appointment_id")
 
   // Follow-up timing
-  scheduledFor          DateTime
+  scheduledFor          DateTime @map("scheduled_for")
 
   // Contact
-  contactMethod         ContactMethod
+  contactMethod         ContactMethod @map("contact_method")
 
   // Response tracking
-  attemptedAt           DateTime?
-  responseReceived      Boolean   @default(false)
-  responseAt            DateTime?
+  attemptedAt           DateTime? @map("attempted_at")
+  responseReceived      Boolean   @default(false) @map("response_received")
+  responseAt            DateTime? @map("response_at")
   response              String?   @db.Text
 
   // Concerns
-  concernRaised         Boolean   @default(false)
-  concernDescription    String?   @db.Text
-  escalatedToStaff      Boolean   @default(false)
+  concernRaised         Boolean   @default(false) @map("concern_raised")
+  concernDescription    String?   @db.Text @map("concern_description")
+  escalatedToStaff      Boolean   @default(false) @map("escalated_to_staff")
 
   status                FollowUpStatus
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([appointmentId])
   @@index([scheduledFor])
@@ -815,29 +815,29 @@ model VoiceAgent {
   id                    String    @id @default(cuid())
 
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String    @unique
+  clinicId              String    @unique @map("clinic_id")
 
   // Agent configuration
-  agentStatus           VoiceAgentStatus
-  agentId               String?
+  agentStatus           VoiceAgentStatus @map("agent_status")
+  agentId               String? @map("agent_id")
 
   // Call settings
-  inboundEnabled        Boolean   @default(true)
-  outboundEnabled       Boolean   @default(true)
-  allowedCallHours      String?
+  inboundEnabled        Boolean   @default(true) @map("inbound_enabled")
+  outboundEnabled       Boolean   @default(true) @map("outbound_enabled")
+  allowedCallHours      String? @map("allowed_call_hours")
 
   // Knowledge base link
   knowledgeBase         KnowledgeBase? @relation(fields: [knowledgeBaseId], references: [id])
-  knowledgeBaseId       String?
+  knowledgeBaseId       String? @map("knowledge_base_id")
 
   // Metrics
-  totalCalls            Int       @default(0)
-  successfulCalls       Int       @default(0)
+  totalCalls            Int       @default(0) @map("total_calls")
+  successfulCalls       Int       @default(0) @map("successful_calls")
 
   callLogs              CallLog[]
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([clinicId])
   @@map("voice_agents")
@@ -856,31 +856,31 @@ model CallLog {
   id                    String    @id @default(cuid())
 
   voiceAgent            VoiceAgent @relation(fields: [voiceAgentId], references: [id])
-  voiceAgentId          String
+  voiceAgentId          String @map("voice_agent_id")
 
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String
+  clinicId              String @map("clinic_id")
 
   // Call details
-  phoneNumber           String
-  callDirection         CallDirection
+  phoneNumber           String @map("phone_number")
+  callDirection         CallDirection @map("call_direction")
   purpose               CallPurpose
 
   // Call recording
-  startTime             DateTime
-  endTime               DateTime?
-  durationSeconds       Int?
-  recordingUrl          String?
+  startTime             DateTime @map("start_time")
+  endTime               DateTime? @map("end_time")
+  durationSeconds       Int? @map("duration_seconds")
+  recordingUrl          String? @map("recording_url")
 
   // Transcript
-  transcriptUrl         String?
-  transcriptText        String?   @db.Text
+  transcriptUrl         String? @map("transcript_url")
+  transcriptText        String?   @db.Text @map("transcript_text")
 
   // Outcome
-  callStatus            CallStatus
+  callStatus            CallStatus @map("call_status")
   outcome               String?   @db.Text
 
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime  @default(now()) @map("created_at")
 
   @@index([voiceAgentId])
   @@index([clinicId])
@@ -925,13 +925,13 @@ model KnowledgeBase {
   id                    String    @id @default(cuid())
 
   clinic                Clinic    @relation(fields: [clinicId], references: [id])
-  clinicId              String    @unique
+  clinicId              String    @unique @map("clinic_id")
 
   // Content
   faqItems              FAQItem[]
 
   // Status
-  lastUpdatedAt         DateTime  @updatedAt
+  lastUpdatedAt         DateTime  @updatedAt @map("last_updated_at")
 
   voiceAgents           VoiceAgent[]
 
@@ -943,14 +943,14 @@ model FAQItem {
   id                    String    @id @default(cuid())
 
   knowledgeBase         KnowledgeBase @relation(fields: [knowledgeBaseId], references: [id], onDelete: Cascade)
-  knowledgeBaseId       String
+  knowledgeBaseId       String @map("knowledge_base_id")
 
   question              String
   answer                String    @db.Text
   category              String
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([knowledgeBaseId])
   @@map("faq_items")
@@ -960,27 +960,27 @@ model PortalMessage {
   id                    String    @id @default(cuid())
 
   patient               Patient   @relation(fields: [patientId], references: [id])
-  patientId             String
+  patientId             String @map("patient_id")
 
   // Message
-  messageText           String    @db.Text
-  messageType           MessageType
+  messageText           String    @db.Text @map("message_text")
+  messageType           MessageType @map("message_type")
 
   // Auto-response details (if applicable)
-  fromChatbot           Boolean   @default(false)
-  chatbotConfidence     Float?
+  fromChatbot           Boolean   @default(false) @map("from_chatbot")
+  chatbotConfidence     Float? @map("chatbot_confidence")
 
   // Staff reply (if applicable)
   staffReply            User?     @relation("StaffReplies", fields: [staffReplyFromId], references: [id])
-  staffReplyFromId      String?
-  staffReplyAt          DateTime?
+  staffReplyFromId      String? @map("staff_reply_from_id")
+  staffReplyAt          DateTime? @map("staff_reply_at")
 
   // Resolution
   resolved              Boolean   @default(false)
-  needsClinicalReview   Boolean   @default(false)
+  needsClinicalReview   Boolean   @default(false) @map("needs_clinical_review")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@index([patientId])
   @@map("portal_messages")
@@ -1001,10 +1001,10 @@ enum MessageType {
 model PipelineBoard {
   id                    String    @id @default(cuid())
 
-  clinicId              String    @unique
+  clinicId              String    @unique @map("clinic_id")
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@map("pipeline_boards")
 }
@@ -1017,21 +1017,21 @@ model AuditLog {
   id                    String    @id @default(cuid())
 
   // Entity info
-  entityType            String
-  entityId              String
+  entityType            String @map("entity_type")
+  entityId              String @map("entity_id")
 
   // Action
   action                String
-  userId                String
+  userId                String @map("user_id")
 
   // Change details
-  previousValue         String?   @db.Text
-  newValue              String?   @db.Text
+  previousValue         String?   @db.Text @map("previous_value")
+  newValue              String?   @db.Text @map("new_value")
 
-  ipAddress             String?
-  userAgent             String?   @db.Text
+  ipAddress             String? @map("ip_address")
+  userAgent             String?   @db.Text @map("user_agent")
 
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime  @default(now()) @map("created_at")
 
   @@index([entityType, entityId])
   @@index([userId])

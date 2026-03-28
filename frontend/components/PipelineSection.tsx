@@ -206,9 +206,9 @@ export default function PipelineSection() {
           {/* Description Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 mt-16 sm:mt-20 lg:mt-24">
             {pipelineNodes.map((node, index) => (
-              <div
+              <button
                 key={index}
-                className={`p-4 sm:p-6 rounded-lg border border-border/20 bg-card/30 hover:bg-card/60 backdrop-blur-sm transition-all duration-500 transform ${
+                className={`p-4 sm:p-6 rounded-lg border border-border/20 bg-gray-200 hover:bg-card/60 backdrop-blur-sm transition-all hover:scale-[1.3] duration-500 transform ${
                   activeCircles[index] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
               >
@@ -218,37 +218,37 @@ export default function PipelineSection() {
                   </div>
                   <h3 className="font-semibold text-primary text-sm sm:text-base">{node.label}</h3>
                 </div>
-                <p className="text-xs sm:text-sm text-primary/60 leading-relaxed">
+                <p className="text-xs sm:text-sm text-primary/80 leading-relaxed">
                   {node.description}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Benefits callout */}
         <div className="mt-16 sm:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          <div className="p-6 sm:p-8 rounded-xl border border-brand/30 bg-brand/5 backdrop-blur-sm">
-            <div className="text-3xl sm:text-4xl mb-3">⚡</div>
+          <button className="p-6 sm:p-8 rounded-xl border-t shadow-sm bg-accent/5 border-t-[6px] border-accent bg-brand/5 backdrop-blur-sm">
+           
             <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">70% Faster</h3>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">
               Reduce patient processing time from hours to minutes.
             </p>
-          </div>
-          <div className="p-6 sm:p-8 rounded-xl border border-brand/30 bg-brand/5 backdrop-blur-sm">
-            <div className="text-3xl sm:text-4xl mb-3">💰</div>
+          </button>
+          <button className="p-6 sm:p-8 rounded-xl border-t shadow-sm bg-accent/5 border-t-[6px] border-accent bg-brand/5 backdrop-blur-sm">
+            
             <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">40% Cost Savings</h3>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">
               Eliminate manual administrative overhead and errors.
             </p>
-          </div>
-          <div className="p-6 sm:p-8 rounded-xl border border-brand/30 bg-brand/5 backdrop-blur-sm">
-            <div className="text-3xl sm:text-4xl mb-3">📈</div>
+          </button>
+          <button className="p-6 sm:p-8 rounded-xl border-t border-t-[6px] bg-accent/5 border-t-[6px] border-accent backdrop-blur-sm">
+          
             <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">3x Higher Revenue</h3>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">
               More approved claims and faster patient throughput.
             </p>
-          </div>
+          </button>
         </div>
       </div>
     </section>
