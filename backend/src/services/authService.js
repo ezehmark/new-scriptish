@@ -320,7 +320,7 @@ const registerHospital = async (input) => {
     throw new ConflictError('Hospital with this NPI number or email already exists');
   }
 
-  // Create hospital
+  // Create hospitals
   const hospital = await prisma.hospital.create({
     data: {
       name: input.hospital.name,
