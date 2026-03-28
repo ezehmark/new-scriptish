@@ -1,5 +1,5 @@
 const { verifyAccessToken } = require('../utils/jwt');
-
+//define auth middlewares
 const authMiddleware = (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
