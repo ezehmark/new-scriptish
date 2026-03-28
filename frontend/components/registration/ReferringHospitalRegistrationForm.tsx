@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, AlertCircle, EyeIcon, EyeOffIcon, Loader2 } from 'lucide-react';
+import { ArrowLeft, AlertCircle, EyeIcon, EyeOffIcon, Loader2, Router } from 'lucide-react';
 import { authService } from '@/lib/authService';
 import {
   Select,
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import DashboardPage from '@/app/dashboard/page';
 
 interface ReferringHospitalRegistrationFormProps {
   onSubmit: (data: Record<string, any>) => void;
@@ -221,8 +222,11 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
         },
       };
 
+      
+    
       const response = await authService.registerHospital(registrationData);
       
+     
       // Call onSubmit with the response data
       onSubmit({
         ...formData,

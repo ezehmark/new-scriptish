@@ -22,6 +22,8 @@ export default function EmailVerificationStep({ email, temporaryToken, onVerifie
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    //mock-up successful verification
+    
     
     if (!verificationCode.trim()) {
       setError('Please enter the verification code');

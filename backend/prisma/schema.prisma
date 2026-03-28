@@ -29,10 +29,10 @@ model User {
 
   // Patient relationship
   patient               Patient?  @relation("PatientUser", fields: [patientId], references: [id])
-  patientId             String?   @map("patient_id")
+  patientId             String?   @unique @map("patient_id")
 
   // Various staff roles
-  assignedReferrals     Referral[] @relation("ReferringPhysician")
+  assignedReferrals     Referral[] @relation("ReferralAssignedStaff")
   assignedAppointments  Appointment[] @relation("AssignedStaff")
 
   // Portal chat/support
@@ -94,7 +94,7 @@ model Clinic {
   // Clinic operations
   infusionChairCount    Int @map("infusion_chair_count")
   treatmentTypesOffered String[] @map("treatment_types_offered")
-  serviceArea           String[]? @map("service_area")
+  serviceArea           String[] @default([]) @map("service_area")
 
   // Platform status
   status                ClinicStatus
@@ -260,6 +260,8 @@ model Patient {
   intakeForm            PatientIntakeForm?
   hipaaConsent          HIPAAConsent?
   appointments          Appointment[]
+  priorAuthorizations   PriorAuthorization[]
+  portalMessages        PortalMessage[]
 
   // Pipeline status
   pipelineStage         PipelineStage @map("pipeline_stage")
@@ -307,6 +309,10 @@ model Referral {
   // Referring physician
   referringPhysician    ReferringPhysician @relation(fields: [physicianId], references: [id])
   physicianId           String @map("physician_id")
+
+  // Assigned staff for follow-up
+  assignedStaff         User?     @relation("ReferralAssignedStaff", fields: [assignedStaffId], references: [id])
+  assignedStaffId       String?   @map("assigned_staff_id")
 
   // Clinical details
   primaryDiagnosis      String @map("primary_diagnosis")

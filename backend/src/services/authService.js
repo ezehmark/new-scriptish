@@ -80,6 +80,7 @@ const registerClinic = async (input) => {
         role: 'CLINIC_ADMIN',
         status: 'PENDING_EMAIL_VERIFICATION',
         clinicId: clinic.id,
+
       },
     });
 
@@ -304,12 +305,95 @@ const resetPassword = async (input) => {
   return { message: 'Password reset successful' };
 };
 
+const registerHospital = async (input) => {
+  // Check if hospital already exists
+  const existingHospital = await prisma.hospital.findFirst({
+    where: {
+      OR: [
+        { npiNumber: input.hospital.npiNumber },
+        { workEmail: input.hospital.workEmail },
+      ],
+    },
+  });
+
+  if (existingHospital) {
+    throw new ConflictError('Hospital with this NPI number or email already exists');
+  }
+
+  // Create hospital
+  const hospital = await prisma.hospital.create({
+    data: {
+      name: input.hospital.name,
+      npiNumber: input.hospital.npiNumber,
+      taxId: input.hospital.taxId,
+      stateLicenseNumber: input.hospital.stateLicenseNumber,
+      primaryOfficeAddress: input.hospital.address,
+      city: input.hospital.city,
+      state: input.hospital.state,
+      zipCode: input.hospital.zipCode,
+      primaryPhone: input.hospital.primaryPhone,
+      workEmail: input.hospital.workEmail,
+      contactPersonFirstName: input.admin.firstName,
+      contactPersonLastName: input.admin.lastName,
+      contactPersonTitle: input.admin.title,
+      status: 'REGISTERED',
+    },
+  });
+
+  // Create admin user for authentication
+  let user = null;
+  if (input.admin) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: input.hospital.workEmail },
+    });
+
+    if (existingUser) {
+      throw new ConflictError('User with this email already exists');
+    }
+
+    const passwordHash = await hashPassword(input.admin.password);
+
+    user = await prisma.user.create({
+      data: {
+        email: input.hospital.workEmail,
+        passwordHash,
+        firstName: input.admin.firstName,
+        lastName: input.admin.lastName,
+        role: 'CLINIC_ADMIN',
+        status: 'PENDING_EMAIL_VERIFICATION',
+      },
+    });
+
+    // Send verification email
+    const verificationCode = generateVerificationCode();
+    storeVerificationToken(input.hospital.workEmail, verificationCode);
+    await sendVerificationEmail(input.hospital.workEmail, verificationCode);
+  }
+
+  const tokenPayload = {
+    userId: user?.id || '',
+    hospitalId: hospital.id,
+    email: input.hospital.workEmail,
+    role: 'CLINIC_ADMIN',
+  };
+
+  const temporaryToken = generateTemporaryToken(tokenPayload, '600'); // 10 minutes
+
+  return {
+    hospitalId: hospital.id,
+    temporaryToken,
+    nextStep: user ? 'VERIFY_EMAIL' : 'EMAIL_VERIFICATION_OPTIONAL',
+    userId: user?.id,
+  };
+};
+
 const logout = async (userId) => {
   return { message: 'Logged out successfully' };
 };
 
 module.exports = {
   registerClinic,
+  registerHospital,
   verifyEmail,
   signBAA,
   login,

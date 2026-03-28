@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { authMiddleware, temporaryTokenMiddleware } = require('../middleware/auth');
 const {
   registerClinic,
+  registerHospital,
   verifyEmail,
   signBAA,
   login,
@@ -17,6 +18,17 @@ router.post('/register/clinic', async (req, res, next) => {
   try {
     const input = req.body;
     const result = await registerClinic(input);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /auth/register/hospital
+router.post('/register/hospital', async (req, res, next) => {
+  try {
+    const input = req.body;
+    const result = await registerHospital(input);
     res.status(201).json(result);
   } catch (error) {
     next(error);
