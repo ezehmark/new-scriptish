@@ -4,12 +4,19 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '@/lib/authService';
 
+export const dynamic='force-dynamic';
 export default function VerifyEmailPage() {
-  const searchParams = useSearchParams();
+ 
   const router = useRouter();
-  const code = searchParams?.get('code') || '';
-  const email = searchParams?.get('email') || '';
-
+  const[code,setCode]=useState('')
+ const[email,setEmail]=useState('')
+ 
+useEffect(()=>{
+  const params = new URLSearchParams(window.location.search);
+  const codeParam =  params.get('code')
+  setCode(codeParam);
+  setEmail(params.get(email))
+},[])
   const [tempTokenInput, setTempTokenInput] = useState('');
   const [status, setStatus] = useState<'idle'|'verifying'|'success'|'error'>('idle');
   const [error, setError] = useState('');
