@@ -243,6 +243,7 @@ const login = async (input) => {
 
   let responseData = {
     userId: user.id,
+    org:null,
     role: user.role,
     accessToken: null,
     refreshToken: null,
@@ -258,12 +259,21 @@ const login = async (input) => {
 
   // Build response based on tenant type
   if (isClinincUser) {
+    const clinic = await prisma.clinic.findFirst({
+      where:{id:user.clinicId}
+    });
+
     tokenPayload.clinicId = user.clinicId;
     responseData.clinicId = user.clinicId;
+    responseData = {org:clinic,...rest}
     if (user.clinic) {
       responseData.clinic = user.clinic;
     }
   } else if (isHospitalUser) {
+    const hospital = await prisma.hospital.findFirst({
+      where:{id:user.hospitalId}
+    });
+    responseData = {org:hospital,...rest}
     tokenPayload.hospitalId = user.hospitalId;
     responseData.hospitalId = user.hospitalId;
     if (user.hospital) {
@@ -397,6 +407,7 @@ const registerHospital = async (input) => {
       data: {
         email: input.hospital.workEmail,
         passwordHash,
+        
         firstName: input.admin.firstName,
         lastName: input.admin.lastName,
         role: 'CLINIC_ADMIN',

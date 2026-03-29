@@ -191,6 +191,8 @@ export default function LoginPage() {
         password,
       });
 
+      console.log('Response data for this login:',response)
+
       // Store tenant information and route accordingly
       if (response.hospitalId) {
         localStorage.setItem('hospitalId', response.hospitalId);
