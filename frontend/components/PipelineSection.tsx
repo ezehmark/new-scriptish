@@ -7,13 +7,13 @@ interface PipelineNode {
   description: string;
 }
 
-// Generate shade variations of the brand color (purple: oklch(0.621 0.153 301.1))
+// Blue shades from light to dark
 const brandShades = [
-  'oklch(0.621 0.153 301.1)', // Original brand
-  'oklch(0.580 0.145 301.1)', // Darker shade 1
-  'oklch(0.540 0.138 301.1)', // Darker shade 2
-  'oklch(0.500 0.130 301.1)', // Darker shade 3
-  'oklch(0.460 0.122 301.1)', // Darker shade 4
+  'oklch(0.88 0.06 256.4)',   // Very light blue
+  'oklch(0.76 0.11 256.4)',   // Light blue
+  'oklch(0.65 0.15 256.4)',   // Medium blue (original)
+  'oklch(0.50 0.14 256.4)',   // Dark blue
+  'oklch(0.38 0.12 256.4)',   // Very dark blue
 ];
 
 function PipelineCircle({ node, index, isActivated }: { node: PipelineNode; index: number; isActivated: boolean }) {
