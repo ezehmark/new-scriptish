@@ -8,6 +8,7 @@ import ReferringHospitalRegistrationForm from '@/components/registration/Referri
 import EmailVerificationStep from '@/components/registration/EmailVerificationStep';
 import { routerServerGlobal } from 'next/dist/server/lib/router-utils/router-server-context';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 type TenantType = 'clinic' | 'referring-hospital' | null;
 type RegistrationStep = 'type-selection' | 'form' | 'email-verification';
@@ -81,8 +82,10 @@ export default function RegisterPage() {
 
   return (
     <main className="w-full min-h-screen bg-gradient-to-b from-background via-background to-background/95">
-      <TopNav />
-      
+     
+       <Link href="/" className="text-xl sm:text-2xl absolute font-bold bg-gradient-to-r t-20 l-20 ml-8 mt-8 from-accent/50 via-accent to-accent/50 text-transparent bg-clip-text ">
+              Scriptish
+            </Link>
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Progress Indicator */}
