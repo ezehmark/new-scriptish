@@ -215,8 +215,17 @@ export default function HeroSection() {
         />
       )}
 
+      {/* Clinician background image */}
+      <div className="absolute inset-0 opacity-30 -mt-8 dark:opacity-10 pointer-events-none">
+        <img
+          src="/clinician1.png"
+          alt="Clinician"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-background dark:bg-background moveBg" />
+      <div className="absolute inset-0 bg-transparent dark:bg-background moveBg" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
