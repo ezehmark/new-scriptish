@@ -227,9 +227,9 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
 
       //Stop other registrations for now
 
-          if (formData.workEmail!=='ezehmark@bytpay.live') {
+          /*if (formData.workEmail!=='ezehmark@bytpay.com') {
             router.push('/under-construction');
-            return}
+            return}*/
     
       const response = await authService.registerHospital(registrationData);
       

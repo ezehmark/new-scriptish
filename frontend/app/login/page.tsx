@@ -209,8 +209,17 @@ export default function LoginPage() {
         // Fallback to dashboard if neither tenant type is present
         router.push('/dashboard');
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
+    } catch (err: any) {
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (err?.message) {
+        errorMessage = err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+      
       setError(errorMessage);
       setIsLoading(false);
     }

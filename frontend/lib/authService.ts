@@ -133,7 +133,7 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Login failed: ${response.statusText}`
+          errorData.error || errorData.message || `Login failed: ${response.statusText}`
         );
       }
 
@@ -176,13 +176,9 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Registration failed: ${response.statusText}`
+          errorData.error || errorData.message || `Registration failed: ${response.statusText}`
         );
       }
-
-      const data = await response.json();
-      
-      // Store temporary token
       localStorage.setItem('temporaryToken', data.temporaryToken);
       localStorage.setItem('clinicId', data.clinicId);
       
@@ -211,7 +207,7 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Registration failed: ${response.statusText}`
+          errorData.error || errorData.message || `Registration failed: ${response.statusText}`
         );
       }
 
@@ -250,7 +246,7 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Email verification failed: ${response.statusText}`
+          errorData.error || errorData.message || `Email verification failed: ${response.statusText}`
         );
       }
 
@@ -285,7 +281,7 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `BAA signing failed: ${response.statusText}`
+          errorData.error || errorData.message || `BAA signing failed: ${response.statusText}`
         );
       }
 
@@ -331,7 +327,8 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message ||
+          errorData.error ||
+            errorData.message ||
             `Failed to resend verification: ${response.statusText}`
         );
       }
@@ -441,7 +438,7 @@ class AuthService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Failed to reset password: ${response.statusText}`
+          errorData.error || errorData.message || `Failed to reset password: ${response.statusText}`
         );
       }
 

@@ -74,7 +74,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div
-          className={`fixed inset-y-0 left-0 z-40 w-64 bg-primary/10 border-r border-border/30 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-40 w-64 bg-primary/10 backdrop-blur-md border-r border-border/30 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -104,7 +104,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
 
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-accent/20 text-accent border border-accent/50'
+                      ? 'bg-primary/50 text-accent border border-accent/50'
                       : 'text-foreground/70 hover:bg-primary/30 hover:text-accent'
                   }`}
                 >

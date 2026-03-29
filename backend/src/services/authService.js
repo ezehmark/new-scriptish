@@ -219,11 +219,12 @@ const login = async (input) => {
     throw new UnauthorizedError('Invalid email or password');
   }
 
-  if (user.status !== 'ACTIVE') {
+  //Disabled until zeptomail is active
+  /*if (user.status !== 'ACTIVE') {
     throw new UnauthorizedError(
       `Account is ${user.status}. Please complete registration.`
     );
-  }
+  }*/
 
   // Update last login
   await prisma.user.update({
