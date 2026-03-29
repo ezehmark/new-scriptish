@@ -266,7 +266,9 @@ const login = async (input) => {
 
     tokenPayload.clinicId = user.clinicId;
     responseData.clinicId = user.clinicId;
-    responseData = {org:clinic,...rest}
+   const {org,...rest} = responseData;
+   org=clinic;
+   responseData = {org,...rest};
     if (user.clinic) {
       responseData.clinic = user.clinic;
     }
@@ -274,7 +276,9 @@ const login = async (input) => {
     const hospital = await prisma.hospital.findFirst({
       where:{id:user.hospitalId}
     });
-    responseData = {org:hospital,...rest}
+    const {org,...rest} = responseData;
+    org=hospital;
+    responseData = {org, ...rest}
     tokenPayload.hospitalId = user.hospitalId;
     responseData.hospitalId = user.hospitalId;
     if (user.hospital) {
