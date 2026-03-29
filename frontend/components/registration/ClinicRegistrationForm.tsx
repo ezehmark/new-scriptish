@@ -263,6 +263,11 @@ export default function ClinicRegistrationForm({ onSubmit, onBack }: ClinicRegis
 
       const response = await authService.registerClinic(registrationData);
       
+      console.log('Hospital created',response)
+     localStorage.setItem('hospital',JSON.stringify(response))
+
+      //return early for testing purposes
+  
       // Call onSubmit with the response data
       onSubmit({
         ...formData,

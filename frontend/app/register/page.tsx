@@ -6,6 +6,8 @@ import TenantTypeSelection from '@/components/registration/TenantTypeSelection';
 import ClinicRegistrationForm from '@/components/registration/ClinicRegistrationForm';
 import ReferringHospitalRegistrationForm from '@/components/registration/ReferringHospitalRegistrationForm';
 import EmailVerificationStep from '@/components/registration/EmailVerificationStep';
+import { routerServerGlobal } from 'next/dist/server/lib/router-utils/router-server-context';
+import { useRouter } from 'next/navigation';
 
 type TenantType = 'clinic' | 'referring-hospital' | null;
 type RegistrationStep = 'type-selection' | 'form' | 'email-verification';
@@ -14,6 +16,7 @@ interface RegistrationState {
   tenantType: TenantType;
   step: RegistrationStep;
   formData: Record<string, any>;
+  hospitalId?: string;
 }
 
 function DevOngoingScreen() {
@@ -203,6 +206,7 @@ export default function RegisterPage() {
     step: 'type-selection',
     formData: {},
   });
+    const router = useRouter();
 
   const handleTenantTypeSelect = (type: TenantType) => {
     setState(prev => ({
@@ -213,16 +217,32 @@ export default function RegisterPage() {
   };
 
   const handleFormSubmit = (formData: Record<string, any>) => {
+    const hospitalId = formData.hospitalId;
+    
     setState(prev => ({
       ...prev,
       formData,
-      step: 'email-verification',
+      hospitalId,
+      step: 'form', // Change to email-verification later
     }));
+
+    // Route immediately based on tenant type instead of waiting for state update
+    if (state.tenantType === 'referring-hospital') {
+      router.push('/hospital-dashboard');
+    } else if (state.tenantType === 'clinic') {
+      window.location.href = '/clinic-dashboard';
+    }
   };
+
+
 
   const handleEmailVerified = () => {
     // After email verification, redirect to success or next step
-    window.location.href = '/dashboard';
+    if (state.tenantType === 'referring-hospital') {
+      router.push('/hospital-dashboard');
+    } else if (state.tenantType === 'clinic') {
+      window.location.href = '/clinic-dashboard';
+    }
   };
 
   const handleBackClick = () => {

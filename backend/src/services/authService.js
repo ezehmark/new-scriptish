@@ -132,11 +132,19 @@ const verifyEmail = async (input) => {
     data: {
       status: 'PENDING_BAA_SIGNATURE',
     },
-    include: { clinic: true },
   });
 
+  // Check if this email is associated with a Hospital (by workEmail)
+  let hospital = null;
+  try {
+    hospital = await prisma.hospital.findUnique({ where: { workEmail: input.email } });
+  } catch (e) {
+    // ignore -- hospital may not exist
+  }
+
   return {
-    clinicId: updatedUser.clinicId,
+    clinicId: updatedUser.clinicId || null,
+    hospitalId: hospital ? hospital.id : null,
     status: 'EMAIL_VERIFIED',
     nextStep: 'SIGN_BAA',
   };
@@ -390,7 +398,7 @@ const registerHospital = async (input) => {
   const temporaryToken = generateTemporaryToken(tokenPayload, '600'); // 10 minutes
 
   return {
-    hospitalId: hospital.id,
+    ...hospital,
     temporaryToken,
     nextStep: user ? 'VERIFY_EMAIL' : 'EMAIL_VERIFICATION_OPTIONAL',
     userId: user?.id,

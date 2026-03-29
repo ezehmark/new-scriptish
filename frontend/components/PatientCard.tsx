@@ -11,6 +11,7 @@ interface PatientCardProps {
   nextAction: string;
   assignedStaff: string;
   appointmentDate?: string;
+  onClick?: () => void;
 }
 
 const statusColors = {
@@ -34,9 +35,15 @@ export default function PatientCard({
   nextAction,
   assignedStaff,
   appointmentDate,
+  onClick,
 }: PatientCardProps) {
   return (
-    <div className="bg-card border border-border/20 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow">
+    <div
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      className={`bg-card border border-border/20 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''}`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>

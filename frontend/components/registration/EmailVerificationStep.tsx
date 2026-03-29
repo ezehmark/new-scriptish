@@ -93,6 +93,8 @@ export default function EmailVerificationStep({ email, temporaryToken, onVerifie
       ) : (
         <>
           {/* Header */}
+          <div className='flex flex-col gap-2 md:flex-row'>
+            <div className='w-full md:w-[60%] md:border-r-[1px] border-r-0 border-accent/20 pr-8 md:mr-8'>
           <div className="mb-10">
             <h2 className="text-3xl font-bold text-foreground mb-2">
               Verify Your Email
@@ -101,10 +103,16 @@ export default function EmailVerificationStep({ email, temporaryToken, onVerifie
               We've sent a verification code to <span className="font-semibold text-foreground">{email}</span>.
               Enter it below to continue.
             </p>
+
+            {/* Info Box */}
+          <div className="mt-8 p-4 bg-accent/5 border border-accent/10 rounded-lg text-sm text-foreground/70">
+            <p>Check your email (including spam folder) for the verification code. It expires in 30 minutes.</p>
+          </div>
+          </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
+          <form onSubmit={handleSubmit} className="space-y-6 w-full md:w-1/2">
             <div>
               <Label htmlFor="code" className="block text-sm font-medium mb-2">
                 Verification Code <span className="text-destructive">*</span>
@@ -155,12 +163,9 @@ export default function EmailVerificationStep({ email, temporaryToken, onVerifie
                 'Verify Email'
               )}
             </Button>
-          </form>
+          </form></div>
 
-          {/* Info Box */}
-          <div className="mt-8 p-4 bg-accent/5 border border-accent/10 rounded-lg text-sm text-foreground/70">
-            <p>Check your email (including spam folder) for the verification code. It expires in 30 minutes.</p>
-          </div>
+          
         </>
       )}
     </div>

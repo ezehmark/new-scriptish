@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import DashboardPage from '@/app/dashboard/page';
+import DashboardPage from '@/app/clinic-dashboard/page';
+import { useRouter } from 'next/navigation';
 
 interface ReferringHospitalRegistrationFormProps {
   onSubmit: (data: Record<string, any>) => void;
@@ -75,6 +76,7 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [apiError, setApiError] = useState<string>('');
 
+  const router = useRouter()
   const validateField = (fieldName: string, value: any): string | null => {
     switch (fieldName) {
       case 'name':
@@ -222,11 +224,18 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
         },
       };
 
-      
+      //Mock up router for testing, will remove later
+
+    
     
       const response = await authService.registerHospital(registrationData);
       
-     
+      console.log('Hospital created', response);
+      localStorage.setItem('hospital', JSON.stringify(response));
+      
+      // Small delay to ensure console logs are rendered before redirect
+      await new Promise(resolve => setTimeout(resolve, 5000));
+  
       // Call onSubmit with the response data
       onSubmit({
         ...formData,

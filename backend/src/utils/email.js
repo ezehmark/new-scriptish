@@ -19,7 +19,13 @@ let client = new SendMailClient({url, token});
 
 const sendEmail = async (options) => {
   try {
-     const response = await client.sendMail({
+    
+    
+    
+    
+    
+    
+    const response = await client.sendMail({
                 from: {
                     address: 'support@scriptishrx.net',
                     name: "Scriptishrx"

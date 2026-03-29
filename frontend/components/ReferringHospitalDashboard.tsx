@@ -1,22 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
-  Building2,
   Activity,
-  Users,
   CheckCircle,
-  AlertCircle,
-  Clock,
   TrendingUp,
   Plus,
   Eye,
-  MoreVertical,
-  Filter,
-  Search,
-  Pill,
-  Heart,
-  Zap,
+  AlertCircle,
+  Clock,
+  Hourglass,
+  LoaderIcon,
+  Building2,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -28,6 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import ReferralsView from '@/components/hospital-dashboard/ReferralsView';
+import AnalyticsView from '@/components/hospital-dashboard/AnalyticsView';
+import PartnersView from '@/components/hospital-dashboard/PartnersView';
+import { useDashboardView } from '@/components/HospitalDashboardLayout';
 
 interface ReferralMetrics {
   totalReferrals: number;
@@ -160,19 +160,19 @@ const getStatusLabel = (status: string) => {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'new':
-      return 'bg-blue-400/10 border-blue-400/30 text-blue-300';
+      return 'bg-blue-400/10 border-blue-400/30 text-blue-600 font-semibold';
     case 'verifying':
-      return 'bg-yellow-400/10 border-yellow-400/30 text-yellow-300';
+      return 'bg-yellow-400/10 border-yellow-400/30 text-yellow-600 font-semibold';
     case 'pa_pending':
-      return 'bg-orange-400/10 border-orange-400/30 text-orange-300';
+      return 'bg-orange-400/10 border-orange-400/30 text-orange-600 font-semibold';
     case 'scheduled':
-      return 'bg-cyan-400/10 border-cyan-400/30 text-cyan-300';
+      return 'bg-cyan-400/10 border-cyan-400/30 text-cyan-600 font-semibold';
     case 'in_treatment':
-      return 'bg-purple-400/10 border-purple-400/30 text-purple-300';
+      return 'bg-purple-400/10 border-purple-400/30 text-purple-600 font-semibold';
     case 'completed':
-      return 'bg-green-400/10 border-green-400/30 text-green-300';
+      return 'bg-green-400/10 border-green-400/30 text-green-600 font-semibold';
     default:
-      return 'bg-gray-400/10 border-gray-400/30 text-gray-300';
+      return 'bg-gray-400/10 border-gray-400/30 text-gray-600 font-semibold';
   }
 };
 
@@ -183,20 +183,38 @@ const getUrgencyIcon = (urgency: string) => {
   return <Clock className="w-4 h-4 text-gray-400" />;
 };
 
+
+type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
+
 export default function ReferringHospitalDashboard() {
-  const [selectedClinic, setSelectedClinic] = useState<string>('');
+  const { currentView, setCurrentView } = useDashboardView();
+  const [selectedClinic, setSelectedClinic] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [referrals, setReferrals] = useState<Referral[]>(MOCK_REFERRALS);
 
   const filteredReferrals = referrals.filter((ref) => {
     const matchesSearch =
       ref.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ref.clinicName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || ref.status === statusFilter;
-    const matchesClinic = !selectedClinic || ref.clinicName === selectedClinic;
+    const matchesStatus = statusFilter === 'all' || ref.status === statusFilter;
+    const matchesClinic = selectedClinic === 'all' || ref.clinicName === selectedClinic;
     return matchesSearch && matchesStatus && matchesClinic;
   });
+  
+
+  // Render different views based on currentView state
+  if (currentView === 'referrals') {
+    return <ReferralsView onBack={() => setCurrentView('overview')} />;
+  }
+
+  if (currentView === 'analytics') {
+    return <AnalyticsView onBack={() => setCurrentView('overview')} />;
+  }
+
+  if (currentView === 'partners') {
+    return <PartnersView onBack={() => setCurrentView('overview')} />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -208,11 +226,13 @@ export default function ReferringHospitalDashboard() {
               <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-2">
                 Referral Dashboard
               </h1>
-              <p className="text-foreground/60">
+              <p className="text-foreground/75">
                 Manage and track your referrals across partner clinics
               </p>
             </div>
-            <Button className="bg-accent hover:bg-accent/90 text-primary font-semibold gap-2 w-full sm:w-auto">
+            <Button 
+              onClick={() => setCurrentView('referrals')}
+              className="bg-primary shadow-sm hover:bg-primary/90 text-white font-semibold gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" />
               New Referral
             </Button>
@@ -225,7 +245,7 @@ export default function ReferringHospitalDashboard() {
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {/* Total Referrals */}
-          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-accent/50 transition-all">
+          <button className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-accent/50 transition-all">
             <div
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
               style={{
@@ -240,15 +260,15 @@ export default function ReferringHospitalDashboard() {
                 </div>
                 <TrendingUp className="w-5 h-5 text-green-400" />
               </div>
-              <p className="text-foreground/60 text-sm mb-1">Total Referrals</p>
+              <p className="text-foreground/80 text-sm mb-1 font-medium">Total Referrals</p>
               <p className="text-2xl font-bold text-accent">
                 {MOCK_METRICS.totalReferrals}
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Pending Verification */}
-          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-yellow-400/50 transition-all">
+          <button className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-yellow-400/50 transition-all">
             <div
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
               style={{
@@ -258,17 +278,17 @@ export default function ReferringHospitalDashboard() {
             />
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-xl bg-yellow-400/20 border border-yellow-400/30 flex items-center justify-center mb-4">
-                <Clock className="w-6 h-6 text-yellow-400" />
+                <LoaderIcon className="w-6 h-6 text-yellow-400" />
               </div>
-              <p className="text-foreground/60 text-sm mb-1">Verifying Insurance</p>
+              <p className="text-foreground/80 text-sm mb-1 font-medium">Verifying Insurance</p>
               <p className="text-2xl font-bold text-yellow-400">
                 {MOCK_METRICS.pendingVerification}
               </p>
             </div>
-          </div>
+          </button>
 
           {/* PA Pending */}
-          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-orange-400/50 transition-all">
+          <button className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-orange-400/50 transition-all">
             <div
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
               style={{
@@ -278,17 +298,17 @@ export default function ReferringHospitalDashboard() {
             />
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-xl bg-orange-400/20 border border-orange-400/30 flex items-center justify-center mb-4">
-                <AlertCircle className="w-6 h-6 text-orange-400" />
+                <Hourglass className="w-6 h-6 text-orange-400" />
               </div>
-              <p className="text-foreground/60 text-sm mb-1">PA Pending</p>
+              <p className="text-foreground/80 text-sm mb-1 font-medium">PA Pending</p>
               <p className="text-2xl font-bold text-orange-400">
                 {MOCK_METRICS.pendingPA}
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Scheduled */}
-          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-accent/50 transition-all">
+          <button className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-accent/50 transition-all">
             <div
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
               style={{
@@ -300,15 +320,15 @@ export default function ReferringHospitalDashboard() {
               <div className="w-12 h-12 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center mb-4">
                 <CheckCircle className="w-6 h-6 text-accent" />
               </div>
-              <p className="text-foreground/60 text-sm mb-1">Scheduled</p>
+              <p className="text-foreground/80 text-sm mb-1 font-medium">Scheduled</p>
               <p className="text-2xl font-bold text-accent">
                 {MOCK_METRICS.scheduled}
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Completed */}
-          <div className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-green-400/50 transition-all">
+          <button className="group relative p-6 rounded-2xl border border-border/30 bg-primary/10 hover:border-green-400/50 transition-all">
             <div
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity"
               style={{
@@ -320,12 +340,12 @@ export default function ReferringHospitalDashboard() {
               <div className="w-12 h-12 rounded-xl bg-green-400/20 border border-green-400/30 flex items-center justify-center mb-4">
                 <CheckCircle className="w-6 h-6 text-green-400" />
               </div>
-              <p className="text-foreground/60 text-sm mb-1">Completed</p>
+              <p className="text-foreground/80 text-sm mb-1 font-medium">Completed</p>
               <p className="text-2xl font-bold text-green-400">
                 {MOCK_METRICS.completed}
               </p>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Two Column Layout */}
@@ -343,8 +363,8 @@ export default function ReferringHospitalDashboard() {
               <Card className="relative z-10 border border-border/30 bg-primary/10 backdrop-blur-sm overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-6">
-                    <Building2 className="w-5 h-5 text-accent" />
-                    <h2 className="text-lg font-bold text-white">
+                    <Building2 className="w-5 h-5 text-primary" />
+                    <h2 className="text-lg font-bold text-primary">
                       Partner Clinics
                     </h2>
                   </div>
@@ -360,24 +380,24 @@ export default function ReferringHospitalDashboard() {
                             <h3 className="font-semibold text-foreground truncate">
                               {clinic.name}
                             </h3>
-                            <p className="text-xs text-foreground/50 truncate">
+                            <p className="text-xs text-foreground/75 truncate font-medium">
                               {clinic.specialty}
                             </p>
                           </div>
                           <div
                             className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
                               clinic.status === 'active'
-                                ? 'bg-green-400/20 text-green-300 border border-green-400/30'
+                                ? 'bg-green-400/10 text-green-600 border border-green-400/30'
                                 : clinic.status === 'pending'
-                                  ? 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/30'
-                                  : 'bg-gray-400/20 text-gray-300 border border-gray-400/30'
+                                  ? 'bg-yellow-400/10 text-yellow-600 border border-yellow-400/30'
+                                  : 'bg-gray-400/10 text-gray-600 border border-gray-400/30'
                             }`}
                           >
                             {clinic.status}
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-foreground/60">
+                          <span className="text-foreground/75 font-medium">
                             Refs: {clinic.referralCount}
                           </span>
                           <Eye className="w-4 h-4 text-accent opacity-0 group-hover/clinic:opacity-100 transition-opacity" />
@@ -411,8 +431,8 @@ export default function ReferringHospitalDashboard() {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-accent" />
-                      <h2 className="text-lg font-bold text-white">
+                      <Users className="w-5 h-5 text-primary" />
+                      <h2 className="text-lg font-bold text-primary">
                         Recent Referrals
                       </h2>
                     </div>
@@ -425,7 +445,7 @@ export default function ReferringHospitalDashboard() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                     <Input
                       placeholder="Search patient or clinic..."
-                      className="bg-background/50 border-border/30 text-foreground placeholder:text-foreground/40"
+                      className="bg-background/50 border-border/30 text-foreground placeholder:text-foreground/60"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -433,8 +453,8 @@ export default function ReferringHospitalDashboard() {
                       <SelectTrigger className="bg-background/50 border-border/30 text-foreground">
                         <SelectValue placeholder="Filter by status" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-900 border-border/30">
-                        <SelectItem value="">All Statuses</SelectItem>
+                      <SelectContent className="bg-primary/10 backdrop-blur-md border-border/30">
+                        <SelectItem value="all">All Statuses</SelectItem>
                         <SelectItem value="new">New</SelectItem>
                         <SelectItem value="verifying">Verifying Insurance</SelectItem>
                         <SelectItem value="pa_pending">PA Pending</SelectItem>
@@ -447,8 +467,8 @@ export default function ReferringHospitalDashboard() {
                       <SelectTrigger className="bg-background/50 border-border/30 text-foreground">
                         <SelectValue placeholder="Filter by clinic" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-900 border-border/30">
-                        <SelectItem value="">All Clinics</SelectItem>
+                      <SelectContent className="bg-primary/10 backdrop-blur-md border-border/30">
+                        <SelectItem value="all">All Clinics</SelectItem>
                         {MOCK_CLINIC_PARTNERS.map((clinic) => (
                           <SelectItem key={clinic.id} value={clinic.name}>
                             {clinic.name}
@@ -474,7 +494,7 @@ export default function ReferringHospitalDashboard() {
                                 </h3>
                                 {getUrgencyIcon(ref.urgency)}
                               </div>
-                              <div className="text-xs text-foreground/50 space-y-1">
+                              <div className="text-xs text-foreground/75 space-y-1 font-medium">
                                 <p>📅 DOB: {ref.patientDOB}</p>
                                 <p>🏥 {ref.clinicName}</p>
                                 <p>💊 {ref.treatmentType}</p>
@@ -488,7 +508,7 @@ export default function ReferringHospitalDashboard() {
                               >
                                 {getStatusLabel(ref.status)}
                               </span>
-                              <span className="text-xs text-foreground/40">
+                              <span className="text-xs text-foreground/70 font-medium">
                                 {ref.referralDate}
                               </span>
                             </div>
@@ -497,8 +517,8 @@ export default function ReferringHospitalDashboard() {
                       ))
                     ) : (
                       <div className="text-center py-12">
-                        <AlertCircle className="w-8 h-8 text-foreground/40 mx-auto mb-2" />
-                        <p className="text-foreground/50">No referrals found</p>
+                        <AlertCircle className="w-8 h-8 text-foreground/70 mx-auto mb-2" />
+                        <p className="text-foreground/75 font-medium">No referrals found</p>
                       </div>
                     )}
                   </div>
@@ -524,7 +544,7 @@ export default function ReferringHospitalDashboard() {
                 <Plus className="w-7 h-7 text-accent" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">New Referral</h3>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-foreground/75 font-medium">
                 Submit a new patient referral to partner clinics
               </p>
             </div>
@@ -544,7 +564,7 @@ export default function ReferringHospitalDashboard() {
                 <TrendingUp className="w-7 h-7 text-accent" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Analytics</h3>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-foreground/75 font-medium">
                 View referral trends and clinic performance
               </p>
             </div>
@@ -566,12 +586,13 @@ export default function ReferringHospitalDashboard() {
               <h3 className="font-semibold text-foreground mb-2">
                 Manage Partners
               </h3>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-foreground/75 font-medium">
                 Add or manage your clinic partnerships
               </p>
             </div>
           </button>
         </div>
+
       </div>
     </div>
   );

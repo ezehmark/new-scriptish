@@ -1,15 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-import { Building2, BarChart3, Users, Settings, LogOut, Menu, X } from 'lucide-react';
-import { useState, useEffect, createContext, useContext } from 'react';
+import { Building2, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { useState, createContext, useContext } from 'react';
 
-
-interface HospitalDashboardLayoutProps {
+interface ClinicDashboardLayoutProps {
   children: React.ReactNode;
 }
 
-type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
+type ViewType = 'overview' | 'patients' | 'settings';
 
 interface DashboardContextType {
   currentView: ViewType;
@@ -18,10 +16,10 @@ interface DashboardContextType {
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
-export const useDashboardView = () => {
+export const useClinicDashboardView = () => {
   const context = useContext(DashboardContext);
   if (!context) {
-    throw new Error('useDashboardView must be used within HospitalDashboardLayout');
+    throw new Error('useClinicDashboardView must be used within ClinicDashboardLayout');
   }
   return context;
 };
@@ -29,46 +27,27 @@ export const useDashboardView = () => {
 const navItems = [
   {
     id: 'overview' as ViewType,
-    label: 'Dashboard',
+    label: 'Overview',
     icon: Building2,
   },
   {
-    id: 'referrals' as ViewType,
-    label: 'Referrals',
+    id: 'patients' as ViewType,
+    label: 'Patients',
     icon: Users,
   },
   {
-    id: 'partners' as ViewType,
-    label: 'Partners',
-    icon: Building2,
-  },
-  {
-    id: 'analytics' as ViewType,
-    label: 'Analytics',
-    icon: BarChart3,
+    id: 'settings' as ViewType,
+    label: 'Settings',
+    icon: Settings,
   },
 ];
 
-export default function HospitalDashboardLayout({ children }: HospitalDashboardLayoutProps) {
-  
+export default function ClinicDashboardLayout({ children }: ClinicDashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('overview');
-  const[hospital,setHospital]=useState({})
-  useEffect(()=>{
-    if(window&& typeof window !== 'undefined'){
-      const hospitalString = localStorage.getItem('hospital');
-      console.log('Hospital retrieving from local storage string is',hospitalString)
-      if(hospitalString){
-        console.log('Hospital retrieved from local storage',hospitalString)
-      const hospital = JSON.parse(hospitalString)
-      setHospital(hospital)
-      }
-
-    }
-  },[currentView])
 
   return (
-    <DashboardContext.Provider value={{ currentView, setHospital, hospital, setCurrentView }}>
+    <DashboardContext.Provider value={{ currentView, setCurrentView }}>
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div
@@ -82,7 +61,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
               <Building2 className="w-8 h-8 text-accent" />
               <div>
                 <h2 className="font-bold text-foreground">Scriptish</h2>
-                <p className="text-xs text-foreground/50">Hospital</p>
+                <p className="text-xs text-foreground/50">Clinic</p>
               </div>
             </button>
           </div>
@@ -99,7 +78,6 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
                     setCurrentView(item.id);
                     setIsSidebarOpen(false);
                   }}
-
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
                       ? 'bg-accent/20 text-accent border border-accent/50'
@@ -130,28 +108,28 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
           />
         )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="lg:hidden border-b border-border/30 bg-primary/5 p-4">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
-          >
-            {isSidebarOpen ? (
-              <X className="w-6 h-6 text-accent" />
-            ) : (
-              <Menu className="w-6 h-6 text-accent" />
-            )}
-          </button>
-        </div>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="lg:hidden border-b border-border/30 bg-primary/5 p-4">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
+            >
+              {isSidebarOpen ? (
+                <X className="w-6 h-6 text-accent" />
+              ) : (
+                <Menu className="w-6 h-6 text-accent" />
+              )}
+            </button>
+          </div>
 
-        {/* Page Content */}
-        <div className="flex-1 overflow-auto">
-          {children}
+          {/* Page Content */}
+          <div className="flex-1 overflow-auto">
+            {children}
+          </div>
         </div>
       </div>
-    </div>
     </DashboardContext.Provider>
   );
 }

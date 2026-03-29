@@ -29,8 +29,8 @@ export default function PartnersPage() {
                 Connect and manage your infusion clinic partnerships
               </p>
             </div>
-            <Button className="bg-accent hover:bg-accent/90 text-primary font-semibold gap-2 w-full sm:w-auto">
-              <Plus className="w-4 h-4" />
+            <Button className="bg-primary hover:bg-primary/90 text-white font-semibold gap-2 w-full sm:w-auto">
+              <Plus className="w-4 h-4 text-white" />
               Add Partner
             </Button>
           </div>
@@ -40,7 +40,7 @@ export default function PartnersPage() {
       {/* Content Placeholder */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-primary/10 border border-border/30 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">
+          <h2 className="text-2xl font-bold text-primary mb-3">
             Partner Integration
           </h2>
           <p className="text-foreground/60 mb-6">

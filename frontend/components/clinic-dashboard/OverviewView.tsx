@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import PatientCard from '@/components/PatientCard';
+import ClinicPatientCRM from '@/components/ClinicPatientCRM';
 import AlertsSection from '@/components/AlertsSection';
+import PatientCard from '@/components/PatientCard';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 const pipelineStages = [
   { id: 'new-referral', label: 'New Referral', color: 'bg-blue-100 dark:bg-blue-950' },
@@ -150,46 +150,30 @@ const mockPatients = {
   ],
 };
 
-export default function DashboardPage() {
+interface OverviewViewProps {
+  onBack?: () => void;
+}
+
+export default function OverviewView({ onBack }: OverviewViewProps) {
   const [activeStage, setActiveStage] = useState('new-referral');
+  const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
 
   const currentPatients = mockPatients[activeStage as keyof typeof mockPatients] || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       {/* Header */}
-      <header className="border-b border-border/20 backdrop-blur-md bg-background/80 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4 sm:py-5">
-            <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-brand via-accent to-brand bg-clip-text text-transparent">
-              Scriptish
-            </Link>
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-foreground">Sunny Valley Infusion Clinic</p>
-                <p className="text-xs text-foreground/60">NPI: 1234567890</p>
-              </div>
-              <button className="px-4 py-2 rounded-lg hover:bg-muted transition-colors text-sm font-medium">
-                Settings
-              </button>
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  Logout
-                </Button>
-              </Link>
-            </div>
+      <div className="border-b border-border/30 bg-primary/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-2">Pipeline Overview</h1>
+            <p className="text-foreground/75">Manage your clinic's patient referrals and appointments</p>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Title Section */}
-        <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Patient Pipeline</h1>
-          <p className="text-foreground/60">Manage your clinic's patient referrals and appointments</p>
-        </div>
-
         {/* Alerts Section */}
         <div className="mb-12 sm:mb-16">
           <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-6">Urgent Actions</h2>
@@ -208,8 +192,8 @@ export default function DashboardPage() {
                 onClick={() => setActiveStage(stage.id)}
                 className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all whitespace-nowrap flex-shrink-0 ${
                   activeStage === stage.id
-                    ? 'bg-brand text-white shadow-lg shadow-brand/30'
-                    : 'bg-muted hover:bg-muted/80 text-foreground'
+                    ? 'bg-accent text-primary shadow-lg'
+                    : 'bg-primary/10 border border-border/30 hover:bg-primary/20 text-foreground'
                 }`}
               >
                 {stage.label}
@@ -224,11 +208,11 @@ export default function DashboardPage() {
           {currentPatients.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {currentPatients.map((patient, index) => (
-                <PatientCard key={index} {...patient} />
+                <PatientCard key={index} {...patient} onClick={() => setSelectedPatient(patient)} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-muted/30 rounded-lg border border-border/20">
+            <div className="text-center py-12 bg-primary/10 rounded-lg border border-border/20">
               <p className="text-foreground/60 mb-4">No patients in this stage</p>
               <Button variant="outline" size="sm">
                 Add New Referral
@@ -238,28 +222,24 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-card border border-border/20 rounded-lg p-6 sm:p-8">
+        <div className="bg-primary/10 border border-border/30 rounded-lg p-6 sm:p-8">
           <h2 className="text-xl font-bold text-foreground mb-6">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <button className="p-4 sm:p-6 rounded-lg border border-brand/30 bg-brand/5 hover:bg-brand/10 transition-colors text-center">
-              <div className="text-3xl mb-3">➕</div>
-              <p className="font-semibold text-sm sm:text-base text-foreground">Add New Referral</p>
-            </button>
             <button className="p-4 sm:p-6 rounded-lg border border-accent/30 bg-accent/5 hover:bg-accent/10 transition-colors text-center">
               <div className="text-3xl mb-3">📋</div>
               <p className="font-semibold text-sm sm:text-base text-foreground">View Reports</p>
             </button>
-            <button className="p-4 sm:p-6 rounded-lg border border-border/30 bg-muted/30 hover:bg-muted/50 transition-colors text-center">
-              <div className="text-3xl mb-3">👥</div>
-              <p className="font-semibold text-sm sm:text-base text-foreground">Manage Staff</p>
-            </button>
-            <button className="p-4 sm:p-6 rounded-lg border border-border/30 bg-muted/30 hover:bg-muted/50 transition-colors text-center">
+            <button className="p-4 sm:p-6 rounded-lg border border-border/30 bg-primary/5 hover:bg-primary/10 transition-colors text-center">
               <div className="text-3xl mb-3">⚙️</div>
               <p className="font-semibold text-sm sm:text-base text-foreground">Settings</p>
             </button>
           </div>
         </div>
       </main>
-    </div>
+
+      {selectedPatient && (
+        <ClinicPatientCRM patient={selectedPatient} onClose={() => setSelectedPatient(null)} />
+      )}
+    </>
   );
 }
