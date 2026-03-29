@@ -263,10 +263,11 @@ export default function ClinicRegistrationForm({ onSubmit, onBack }: ClinicRegis
 
       const response = await authService.registerClinic(registrationData);
       
-      console.log('Hospital created',response)
-     localStorage.setItem('hospital',JSON.stringify(response))
+      console.log('Clinic created',response)
+     localStorage.setItem('clinic',JSON.stringify(response))
 
-      //return early for testing purposes
+       // Small delay to ensure console logs are rendered before redirect
+      await new Promise(resolve => setTimeout(resolve, 5000));
   
       // Call onSubmit with the response data
       onSubmit({
@@ -274,8 +275,9 @@ export default function ClinicRegistrationForm({ onSubmit, onBack }: ClinicRegis
         clinicId: response.clinicId,
         temporaryToken: response.temporaryToken,
       });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+    } catch (error: any) {
+      // Prefer structured backend error message when available
+      const errorMessage = error?.message || (error instanceof Error ? error.message : 'Registration failed. Please try again.');
       setApiError(errorMessage);
       setIsSubmitting(false);
     }

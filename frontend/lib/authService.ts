@@ -179,9 +179,12 @@ class AuthService {
           errorData.error || errorData.message || `Registration failed: ${response.statusText}`
         );
       }
+      const data = await response.json();
+
+      // Store temporary token
       localStorage.setItem('temporaryToken', data.temporaryToken);
       localStorage.setItem('clinicId', data.clinicId);
-      
+
       return data;
     } catch (error) {
       throw this.handleError(error);

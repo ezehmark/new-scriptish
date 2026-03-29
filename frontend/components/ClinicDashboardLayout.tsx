@@ -1,6 +1,7 @@
 'use client';
 
 import { Building2, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, createContext, useContext } from 'react';
 
 interface ClinicDashboardLayoutProps {
@@ -45,7 +46,7 @@ const navItems = [
 export default function ClinicDashboardLayout({ children }: ClinicDashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('overview');
-
+const router = useRouter()
   return (
     <DashboardContext.Provider value={{ currentView, setCurrentView }}>
       <div className="flex h-screen bg-background">
@@ -92,8 +93,14 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
           </nav>
 
           {/* Footer */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border/30">
-            <button className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/30 hover:text-red-400 transition-all">
+          <div className="absolute cursor-pointer bottom-0 left-0 right-0 p-4 border-t border-border/30">
+            <button 
+            onClick={()=>{
+                 router.push('/login')
+              localStorage.removeItem('clinic');
+           
+            }}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/30 hover:text-red-400 transition-all">
               <LogOut className="w-5 h-5" />
               <span className="font-medium">Logout</span>
             </button>

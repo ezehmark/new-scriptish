@@ -373,7 +373,7 @@ export default function ReferringHospitalDashboard() {
                     {MOCK_CLINIC_PARTNERS.map((clinic) => (
                       <div
                         key={clinic.id}
-                        className="group/clinic p-4 rounded-xl border border-border/20 bg-background/50 hover:border-accent/50 hover:bg-primary/20 transition-all cursor-pointer"
+                        className="group/clinic p-4 rounded-xl border border-border/20 bg-background/50 hover:border-accent/10 hover:bg-primary/20 transition-all cursor-pointer"
                       >
                         <div className="flex items-start justify-between gap-2 mb-3">
                           <div className="flex-1 min-w-0">
@@ -484,7 +484,7 @@ export default function ReferringHospitalDashboard() {
                       filteredReferrals.map((ref) => (
                         <div
                           key={ref.id}
-                          className="group/referral p-4 rounded-xl border border-border/20 bg-background/30 hover:border-accent/50 hover:bg-primary/30 transition-all cursor-pointer"
+                          className="group/referral p-4 rounded-xl border border-border/20 bg-background/30 hover:border-accent/10 hover:bg-primary/30 transition-all cursor-pointer"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
