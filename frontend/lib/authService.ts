@@ -454,7 +454,7 @@ class AuthService {
   /**
    * Fetch all clinics
    */
-  async fetchAllClinics(): Promise<any[]> {
+  async fetchAllClinics(): Promise<any> {
     try {
       const accessToken = localStorage.getItem('accessToken');
       
@@ -470,13 +470,20 @@ class AuthService {
         },
       });
 
+      if (response.status === 401) {
+        return { isTokenExpired: true };
+      }
+
       if (!response.ok) {
-        throw new Error(`Failed to fetch clinics: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Failed to fetch clinics: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
       }
 
       return await response.json();
     } catch (error) {
       console.error('Error fetching clinics:', error);
+      console.error('API Base URL:', this.apiBaseUrl);
+      console.error('Error details:', error instanceof Error ? error.message : error);
       return [];
     }
   }
@@ -526,6 +533,49 @@ class AuthService {
    */
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
+  }
+
+  /**
+   * Refresh access token using refresh token
+   */
+  async refreshAccessToken(): Promise<boolean> {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      if (!refreshToken) {
+        throw new Error('No refresh token found');
+      }
+
+      const response = await fetch(`${this.apiBaseUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to refresh token: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Store new access token
+      localStorage.setItem('accessToken', data.accessToken);
+      
+      // Update refresh token if provided
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      // Clear tokens if refresh fails
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      return false;
+    }
   }
 }
 

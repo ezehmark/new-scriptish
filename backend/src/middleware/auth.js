@@ -1,4 +1,4 @@
-const { verifyAccessToken, verifyTemporaryToken } = require('../utils/jwt');
+const { verifyAccessToken, verifyTemporaryToken, verifyRefreshToken } = require('../utils/jwt');
 //define auth middlewares
 const authMiddleware = (req, res, next) => {
   try {
@@ -44,7 +44,30 @@ const temporaryTokenMiddleware = (req, res, next) => {
   }
 };
 
+const refreshTokenMiddleware = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      res.status(401).json({ error: 'Missing refresh token' });
+      return;
+    }
+
+    const payload = verifyRefreshToken(token);
+    if (!payload) {
+      res.status(401).json({ error: 'Invalid or expired refresh token' });
+      return;
+    }
+
+    req.user = payload;
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Token refresh failed' });
+  }
+};
+
 module.exports = {
   authMiddleware,
   temporaryTokenMiddleware,
+  refreshTokenMiddleware,
 };

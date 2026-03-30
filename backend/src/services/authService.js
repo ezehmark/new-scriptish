@@ -448,6 +448,26 @@ const logout = async (userId) => {
   return { message: 'Logged out successfully' };
 };
 
+const refreshAccessToken = async (userPayload) => {
+  try {
+    // Generate new access token using the payload from the verified refresh token
+    const newAccessToken = generateAccessToken({
+      userId: userPayload.userId,
+      email: userPayload.email,
+      role: userPayload.role,
+      ...(userPayload.clinicId && { clinicId: userPayload.clinicId }),
+      ...(userPayload.hospitalId && { hospitalId: userPayload.hospitalId }),
+    });
+
+    return {
+      accessToken: newAccessToken,
+      expiresIn: 3600,
+    };
+  } catch (error) {
+    throw new UnauthorizedError('Failed to refresh token');
+  }
+};
+
 module.exports = {
   registerClinic,
   registerHospital,
@@ -457,4 +477,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   logout,
+  refreshAccessToken,
 };

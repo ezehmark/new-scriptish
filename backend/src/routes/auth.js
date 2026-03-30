@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { authMiddleware, temporaryTokenMiddleware } = require('../middleware/auth');
+const { authMiddleware, temporaryTokenMiddleware, refreshTokenMiddleware } = require('../middleware/auth');
 const {
   registerClinic,
   registerHospital,
@@ -9,6 +9,7 @@ const {
   forgotPassword,
   resetPassword,
   logout,
+  refreshAccessToken,
 } = require('../services/authService');
 
 const router = Router();
@@ -123,6 +124,16 @@ router.get('/me', authMiddleware, async (req, res, next) => {
     }
 
     res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /auth/refresh - Refresh access token
+router.post('/refresh', refreshTokenMiddleware, async (req, res, next) => {
+  try {
+    const result = await refreshAccessToken(req.user);
+    res.json(result);
   } catch (error) {
     next(error);
   }

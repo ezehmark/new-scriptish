@@ -197,11 +197,16 @@ export default function LoginPage() {
       if (response.hospitalId) {
         localStorage.setItem('hospital', JSON.stringify(response.org));
         localStorage.setItem('hospitalAdmin',JSON.stringify(response.user))
+      
+        localStorage.setItem('accessToken',response.accessToken)
+        localStorage.setItem('refreshToken', response.refreshToken)
         localStorage.setItem('tenantType', 'hospital');
         router.push('/hospital-dashboard');
       } else if (response.clinicId) {
         localStorage.setItem('clinicId', response.clinicId);
         localStorage.setItem('clinic',JSON.stringify(response.org));
+        localStorage.setItem('accessToken',response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
         localStorage.setItem('clinicAdmin',JSON.stringify(response.user))
         localStorage.setItem('tenantType', 'clinic');
         router.push('/clinic-dashboard');
