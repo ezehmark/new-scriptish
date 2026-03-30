@@ -76,6 +76,7 @@ function AnimatedStat({ value, suffix, label, icon, index = 0, image }: StatItem
     };
   }, []);
 
+
   useEffect(() => {
     if (isInView && !hasAnimated) {
       const delay = index * 4000; // 4 seconds between each counter
@@ -123,7 +124,7 @@ function AnimatedStat({ value, suffix, label, icon, index = 0, image }: StatItem
         )}
 
         {/* Main border */}
-        <div className="absolute inset-0 rounded-2xl backdrop-blur-[0.02px] border-[6px] border-gray-700" />
+        <div className="absolute inset-0 rounded-2xl backdrop-blur-[0.02px] border-[6px] border-gray-600" />
 
         {/* ✨ Top-right shiny corner */}
         <div className="absolute top-0 right-0 pointer-events-none">
@@ -189,7 +190,7 @@ export default function HeroSection() {
         <div className="text-center">
           <div className="mb-6 sm:mb-8 h-[100px] md:-mt-10 items-center justify-center relative flex overflow-hidden">
             {highlight && (
-              <div
+              <button
                 className="flex items-center h-[40px] moveHighlight -top-[100px] rounded-full px-[2px] relative overflow-hidden justify-center"
                 style={{ clipPath: 'inset(0)' }}
               >
@@ -199,7 +200,7 @@ export default function HeroSection() {
                 >
                   {highlight}
                 </div>
-              </div>
+              </button>
             )}
           </div>
 
