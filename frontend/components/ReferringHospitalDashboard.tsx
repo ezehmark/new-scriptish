@@ -370,7 +370,7 @@ export default function ReferringHospitalDashboard() {
                   </div>
 
                   <div className="space-y-4">
-                    {clinics.length>0&&clinics.map((clinic) => (
+                    {MOCK_CLINIC_PARTNERS.map((clinic) => (
                       <div
                         key={clinic.id}
                         className="group/clinic p-4 rounded-xl border border-border/20 bg-background/50 hover:border-accent/10 hover:bg-primary/20 transition-all cursor-pointer"

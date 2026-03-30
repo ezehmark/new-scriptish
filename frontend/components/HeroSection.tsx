@@ -1,11 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Building2, DollarSign, Zap } from 'lucide-react';
-// import Particles from '@tsparticles/react';
-// import { initParticlesEngine } from '@tsparticles/react';
-// import { loadSlim } from '@tsparticles/slim';
-// import type { Engine, ISourceOptions } from '@tsparticles/engine';
 
 interface StatItem {
   value: number;
@@ -13,13 +9,56 @@ interface StatItem {
   label: string;
   icon: React.ReactNode;
   index?: number;
+  image?: string;
 }
 
-function AnimatedStat({ value, suffix, label, icon, index = 0 }: StatItem) {
+const animationStyles = `
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-150px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-150px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInFromRight {
+    from {
+      opacity: 0;
+      transform: translateX(150px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+`;
+
+function AnimatedStat({ value, suffix, label, icon, index = 0, image }: StatItem) {
   const [displayValue, setDisplayValue] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const getAnimationName = () => {
+    if (index === 0) return 'slideInFromLeft';
+    if (index === 1) return 'slideInFromTop';
+    if (index === 2) return 'slideInFromRight';
+    return 'slideInFromLeft';
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -28,7 +67,7 @@ function AnimatedStat({ value, suffix, label, icon, index = 0 }: StatItem) {
           setIsInView(true);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 1 }
     );
 
     if (ref.current) observer.observe(ref.current);
@@ -64,116 +103,45 @@ function AnimatedStat({ value, suffix, label, icon, index = 0 }: StatItem) {
   }, [isInView, hasAnimated, value, index]);
 
   return (
-    <div ref={ref} className="relative group -mt-4">
-      <div className="absolute inset-0 rounded-2xl overflow-hidden bg-primary/20 backdrop-blur-md border px-auto border-primary/70" />
-      <div className="absolute inset-0 flex items-center justify-center perspective overflow-hidden rounded-2xl">
-       
-      </div>
-      <div className="relative z-10 p-6 sm:p-8">
-        <div className="text-2xl sm:text-4xl font-bold text-accent">
-          {displayValue==50?`$${displayValue}`:displayValue}
-          <span className="text-primary/50">{suffix}</span>
+    <div 
+      ref={ref}
+      className="relative group -mt-4 shadow-lg rounded-2xl"
+      style={{
+        animation: isInView ? `${getAnimationName()} 1s ease-out` : 'none',
+      }}
+    >
+      <div className="relative h-50 rounded-2xl overflow-hidden">
+        {/* Background image */}
+        {image && (
+          <div className="absolute inset-0 rounded-2xl overflow-hidden">
+            <img
+              src={image}
+              alt=""
+              className="w-full h-full group-hover:scale-[1.1] transition-all object-cover"
+            />
+          </div>
+        )}
+
+        {/* Main border */}
+        <div className="absolute inset-0 rounded-2xl backdrop-blur-[0.02px] border-[6px] border-gray-700" />
+
+        {/* ✨ Top-right shiny corner */}
+        <div className="absolute top-0 right-0 pointer-events-none">
+          <div className="w-8 h-8 rounded-tr-2xl overflow-hidden">
+            {/* shiny reflection */}
+            <div className="absolute inset-0 bg-gradient-to-bl from-white/80 via-white/20 to-transparent opacity-70 blur-[2px]" />
+          </div>
         </div>
-        <div className="text-sm sm:text-lg  -mx-6 text-primary font-bold text-center mt-2">{label}</div>
+
+        {/* Content layer */}
+        <div className="absolute inset-0 flex items-center justify-center perspective overflow-hidden rounded-2xl">
+        </div>
       </div>
     </div>
   );
 }
 
 export default function HeroSection() {
-  const [engineReady, setEngineReady] = useState(false);
-
-  // Initialize tsParticles engine once
- 
-
-  // ─────────────────────────────────────────────────────────────
-  // 🎛️  ALL PARTICLE BEHAVIOUR IS CONTROLLED HERE
-  // ─────────────────────────────────────────────────────────────
-  // ─────────────────────────────────────────────────────────────
-  // 🎛️  FIREFLY BEHAVIOUR (Original Color)
-  // ─────────────────────────────────────────────────────────────
-  const particlesOptions: ISourceOptions = useMemo(() => ({
-    fullScreen: { enable: false },
-    fpsLimit: 120,
-    interactivity: {
-      events: {
-        onHover: {
-          enable: true,
-          mode: 'bubble', 
-        },
-        onClick: {
-          enable: true,
-          mode: 'push',
-        },
-      },
-      modes: {
-        bubble: {
-          distance: 200,
-          size: 8,
-          duration: 2,
-          opacity: 0.8,
-        },
-        push: {
-          quantity: 4,
-        },
-      },
-    },
-    particles: {
-      number: {
-        value: 40,
-        density: {
-          enable: true,
-          area: 800,
-        },
-      },
-      color: {
-        value: 'hsl(301, 100%, 50%)', // Reverted to your original purple/pink
-      },
-      shape: {
-        type: 'circle',
-      },
-      opacity: {
-        value: { min: 0.1, max: 0.3 },
-        animation: {
-          enable: true,
-          speed: 0.8,
-          sync: false,
-          startValue: "random",
-        },
-      },
-      size: {
-        value: { min: 1, max: 3 },
-        animation: {
-          enable: true,
-          speed: 2,
-          sync: false,
-        },
-      },
-      // ── Movement: Bottom-Left to Top-Right ─────────────────
-      move: {
-        enable: true,
-        speed: { min: 0.4, max: 1.2 },
-        direction: 'top-right', 
-        random: true,           // Makes flight paths non-linear
-        straight: false,        // Essential for "smooth" drifting
-        outModes: {
-          default: 'out',       // Re-spawns at the opposite side (bottom-left)
-        },
-      },
-      // ── Firefly Glow ──────────────────────────────────────
-      shadow: {
-        enable: true,
-        color: 'hsl(301, 100%, 50%)',
-        blur: 8,
-      },
-      // ── Disabled links for the firefly look ────────────────
-      links: {
-        enable: false,
-      },
-    },
-    detectRetina: true,
-  }), []);
-  // ─────────────────────────────────────────────────────────────
 
   const highlights = [
     { name: 'Patient Referral', color: 'purple-500' },
@@ -197,27 +165,13 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    // Trigger after mount for smooth animation
-    const timer = setTimeout(() => setLoaded(true), 50);
-    return () => clearTimeout(timer);
-  }, []);
-
-   /*useEffect(() => {
-    initParticlesEngine(async (engine: Engine) => {
-      await loadSlim(engine);
-    }).then(() => setEngineReady(true));
-  }, []);*/
-
   return (
-    <section className="relative w-full pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
-
-      {/* ── tsParticles canvas ── */}
-
+    <>
+      <style>{animationStyles}</style>
+      <section className="relative w-full pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
       {/* Clinician background image */}
       <div
-        className="absolute inset-0 opacity-40 transition-all -mt-12 duration-700 dark:opacity-10 pointer-events-none"
+        className="absolute inset-0 opacity-40 transition-all md:-mt-12 duration-700 dark:opacity-10 pointer-events-none"
       
       >
         <img
@@ -250,9 +204,9 @@ export default function HeroSection() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold bg-gradient-to-r from-accent via-accent to-primary mb-4 sm:mb-6  text-transparent bg-clip-text leading-tight">
-            Operating System for Infusion{' '}
+            Operating System for {' '}
             <span className="text-primary enlargeBgText">
-             Clinics
+             Infusion Clinics
             </span>
           </h1>
 
@@ -261,13 +215,14 @@ export default function HeroSection() {
           </p>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-8 mt-12 sm:-mt-10 pt-12 sm:pt-20 border-t border-border/20">
-            <AnimatedStat value={105} suffix="+" label="Clinics Automated" icon={<Building2 size={80} strokeWidth={1.5} />} index={0} />
-            <AnimatedStat value={22} suffix="M+" label="Claims Processed" icon={<DollarSign size={80} strokeWidth={1.5} />} index={1} />
-            <AnimatedStat value={99.9} suffix="%" label="Uptime Support" icon={<Zap size={80} strokeWidth={1.5} />} index={2} />
+          <div className="grid md:grid-cols-3 grid-cols-1 sm:px-18 gap-20 mt-12 sm:-mt-10 pt-12 sm:pt-20 border-t border-border/20">
+            <AnimatedStat value={105} suffix="+" label="Clinics Automated" icon={<Building2 size={80} strokeWidth={1.5} />} index={0} image="/heroImage1.2.png" />
+            <AnimatedStat value={22} suffix="M+" label="Claims Processed" icon={<DollarSign size={80} strokeWidth={1.5} />} index={1} image="/heroImage2.png" />
+            <AnimatedStat value={99.9} suffix="%" label="Uptime Support" icon={<Zap size={80} strokeWidth={1.5} />} index={2} image="/heroImage3.png" />
           </div>
         </div>
       </div>
     </section>
+    </>
   );
 }

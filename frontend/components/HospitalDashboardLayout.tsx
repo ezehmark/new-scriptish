@@ -96,7 +96,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
             <button onClick={() => setCurrentView('overview')} className="flex items-center gap-2">
               <Building2 className="w-8 h-8 text-accent" />
               <div>
-                <h2 className="font-bold text-foreground">{hospital.name}</h2>
+                <h2 className="font-bold text-foreground">Nexu Leads Hospital</h2>
                 <p className="text-xs text-foreground/50">NPI: {hospital.npiNumber}</p>
               </div>
             </button>
@@ -117,7 +117,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
 
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-primary/50 text-accent border border-accent/50'
+                      ? 'bg-primary/60 text-white border border-accent/50'
                       : 'text-foreground/70 hover:bg-primary/30 hover:text-accent'
                   }`}
                 >

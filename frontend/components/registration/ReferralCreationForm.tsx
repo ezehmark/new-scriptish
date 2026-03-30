@@ -599,7 +599,7 @@ export default function ReferralCreationPage({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 bg-accent hover:bg-accent/90 text-primary font-semibold gap-2"
+          className="flex-1 bg-accent hover:bg-accent/90 text-white font-semibold gap-2"
         >
           {isSubmitting ? (
             <>
