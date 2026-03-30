@@ -5,6 +5,37 @@ const { NotFoundError, ValidationError } = require('../middleware/errorHandler')
 
 const router = Router();
 
+// GET /clinics - Fetch all clinics
+router.get('/', authMiddleware, async (req, res, next) => {
+  try {
+    const clinics = await prisma.clinic.findMany({
+      select: {
+        id: true,
+        name: true,
+        clinicType: true,
+        npiNumber: true,
+        streetAddress: true,
+        city: true,
+        state: true,
+        zipCode: true,
+        primaryPhone: true,
+        workEmail: true,
+        infusionChairCount: true,
+        treatmentTypesOffered: true,
+        status: true,
+        createdAt: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    res.json(clinics);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // GET /clinics/:clinicId
 router.get('/:clinicId', authMiddleware, async (req, res, next) => {
   try {

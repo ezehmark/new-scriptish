@@ -147,10 +147,10 @@ export default function FeaturesSection() {
             </div>
 
             </div>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 text-balance">
-            Everything You Need to <span className="text-brand">Automate</span>
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-accent mb-4 sm:mb-6 text-balance">
+            Everything You Need to <span className="text-primary">Automate</span>
           </h2>
-          <p className="max-w-2xl mx-auto text-base sm:text-lg text-foreground/60 text-balance leading-relaxed">
+          <p className="max-w-2xl mx-auto text-primary sm:text-lg text-foreground/60 text-balance leading-relaxed">
             Comprehensive suite of tools designed specifically for modern medical clinics.
           </p>
         </div>

@@ -415,7 +415,7 @@ const registerHospital = async (input) => {
         
         firstName: input.admin.firstName,
         lastName: input.admin.lastName,
-        role: 'CLINIC_ADMIN',
+        role: 'HOSPITAL_ADMIN',
         status: 'PENDING_EMAIL_VERIFICATION',
         hospitalId: hospital.id,
       },

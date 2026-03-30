@@ -452,6 +452,36 @@ class AuthService {
   }
 
   /**
+   * Fetch all clinics
+   */
+  async fetchAllClinics(): Promise<any[]> {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (!accessToken) {
+        throw new Error('No access token found');
+      }
+
+      const response = await fetch(`${this.apiBaseUrl}/clinics`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch clinics: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching clinics:', error);
+      return [];
+    }
+  }
+
+  /**
    * Handle errors
    */
   private handleError(error: any): ApiError {

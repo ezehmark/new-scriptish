@@ -197,6 +197,13 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    // Trigger after mount for smooth animation
+    const timer = setTimeout(() => setLoaded(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
    /*useEffect(() => {
     initParticlesEngine(async (engine: Engine) => {
       await loadSlim(engine);
@@ -207,16 +214,12 @@ export default function HeroSection() {
     <section className="relative w-full pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
 
       {/* ── tsParticles canvas ── */}
-      {engineReady && (
-        <Particles
-          id="hero-particles"
-          options={particlesOptions}
-          className="absolute inset-0 w-full h-full"
-        />
-      )}
 
       {/* Clinician background image */}
-      <div className="absolute inset-0 opacity-40 -mt-12 dark:opacity-10 pointer-events-none">
+      <div
+        className="absolute inset-0 opacity-40 transition-all -mt-12 duration-700 dark:opacity-10 pointer-events-none"
+      
+      >
         <img
           src="/clinician4.png"
           alt="Clinician"

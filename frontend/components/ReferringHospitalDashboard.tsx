@@ -187,7 +187,7 @@ const getUrgencyIcon = (urgency: string) => {
 type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
 
 export default function ReferringHospitalDashboard() {
-  const { currentView, hospital, setHospital, setCurrentView } = useDashboardView();
+  const { currentView, hospital, setHospital, setCurrentView, clinics } = useDashboardView();
   const [selectedClinic, setSelectedClinic] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -370,7 +370,7 @@ export default function ReferringHospitalDashboard() {
                   </div>
 
                   <div className="space-y-4">
-                    {MOCK_CLINIC_PARTNERS.map((clinic) => (
+                    {clinics.length>0&&clinics.map((clinic) => (
                       <div
                         key={clinic.id}
                         className="group/clinic p-4 rounded-xl border border-border/20 bg-background/50 hover:border-accent/10 hover:bg-primary/20 transition-all cursor-pointer"

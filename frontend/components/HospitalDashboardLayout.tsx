@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Building2, BarChart3, Users, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useState, useEffect, createContext, useContext, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/authService';
 
 interface HospitalDashboardLayoutProps {
   children: React.ReactNode;
@@ -14,8 +15,10 @@ type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
 interface DashboardContextType {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
-  hospital:object,
-  setHospital:()=>void
+  hospital: object;
+  setHospital: (hospital: any) => void;
+  clinics: any[];
+  setClinics: (clinics: any[]) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -55,22 +58,32 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('overview');
-  const[hospital,setHospital]=useState({})
-  useEffect(()=>{
-    if(window&& typeof window !== 'undefined'){
+  const [hospital, setHospital] = useState({});
+  const [clinics, setClinics] = useState<any[]>([]);
+  
+  useEffect(() => {
+    if (window && typeof window !== 'undefined') {
       const hospitalString = localStorage.getItem('hospital');
-      console.log('Hospital retrieving from local storage string is',hospitalString)
-      if(hospitalString){
-        console.log('Hospital retrieved from local storage',hospitalString)
-      const hospital = JSON.parse(hospitalString)
-      setHospital(hospital)
+      console.log('Hospital retrieving from local storage string is', hospitalString);
+      if (hospitalString) {
+        console.log('Hospital retrieved from local storage', hospitalString);
+        const hospitalData = JSON.parse(hospitalString);
+        setHospital(hospitalData);
       }
-
     }
-  },[currentView])
+  }, [currentView]);
 
+  // Fetch all clinics
+  useEffect(() => {
+    const fetchClinics = async () => {
+      const allClinics = await authService.fetchAllClinics();
+      setClinics(allClinics);
+      console.log('All clinics fetched:', allClinics);
+    };
+    fetchClinics();
+  }, []);
   return (
-    <DashboardContext.Provider value={{ currentView, setHospital, hospital, setCurrentView }}>
+    <DashboardContext.Provider value={{ currentView, setCurrentView, hospital, setHospital, clinics, setClinics }}>
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div
