@@ -76,21 +76,22 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
   // Fetch all clinics
   useEffect(() => {
     const fetchClinics = async () => {
+      console.log('🔍 [fetchClinics] Starting clinics fetch...');
       let allClinics = await authService.fetchAllClinics();
       
       // Check if token is expired (authService returns { isTokenExpired: true })
       if (allClinics && typeof allClinics === 'object' && allClinics.isTokenExpired) {
-        console.log('Token expired, attempting to refresh...');
+        console.log('⚠️ [fetchClinics] Token expired detected, attempting to refresh...');
         
         // Try to refresh the token
         const refreshSuccess = await authService.refreshAccessToken();
         
         if (refreshSuccess) {
-          console.log('Token refreshed successfully, retrying fetch...');
+          console.log('✅ [fetchClinics] Token refreshed successfully, retrying fetch...');
           // Retry fetching clinics with new token
           allClinics = await authService.fetchAllClinics();
         } else {
-          console.log('Token refresh failed, redirecting to login');
+          console.log('❌ [fetchClinics] Token refresh failed, redirecting to login');
           localStorage.removeItem('hospital');
           localStorage.removeItem('hospitalAdmin');
           localStorage.removeItem('accessToken');
@@ -101,7 +102,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
       }
       
       setClinics(allClinics || []);
-      console.log('All clinics fetched:', allClinics);
+      console.log('✅ [fetchClinics] All clinics fetched:', allClinics);
     };
     fetchClinics();
   }, [router]);

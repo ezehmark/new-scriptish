@@ -459,9 +459,12 @@ class AuthService {
       const accessToken = localStorage.getItem('accessToken');
       
       if (!accessToken) {
-        throw new Error('No access token found');
+        console.error('❌ No access token found in localStorage');
+        return { isTokenExpired: true };
       }
 
+      console.log('📤 Fetching clinics with token:', accessToken.substring(0, 20) + '...');
+      
       const response = await fetch(`${this.apiBaseUrl}/clinics`, {
         method: 'GET',
         headers: {
@@ -470,18 +473,25 @@ class AuthService {
         },
       });
 
+      console.log('📥 Response status:', response.status);
+
       if (response.status === 401) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ 401 Unauthorized - Error details:', errorData);
         return { isTokenExpired: true };
       }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error(`❌ API Error ${response.status}:`, errorData);
         throw new Error(`Failed to fetch clinics: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
       }
 
-      return await response.json();
+      const clinics = await response.json();
+      console.log('✅ Clinics fetched successfully:', clinics);
+      return clinics;
     } catch (error) {
-      console.error('Error fetching clinics:', error);
+      console.error('💥 Error fetching clinics:', error);
       console.error('API Base URL:', this.apiBaseUrl);
       console.error('Error details:', error instanceof Error ? error.message : error);
       return [];

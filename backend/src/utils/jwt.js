@@ -1,9 +1,15 @@
 const jwt = require('jsonwebtoken');
 
 const generateAccessToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET, {
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRATION || '3600',
   });
+  console.log('🔐 [JWT] Generated access token:', {
+    userId: payload.userId,
+    expiresIn: process.env.JWT_EXPIRATION || '3600',
+    secret: process.env.JWT_SECRET ? '***set***' : '***NOT SET***'
+  });
+  return token;
 };
 
 const generateRefreshToken = (payload) => {
@@ -20,8 +26,21 @@ const generateTemporaryToken = (payload, expiresIn = '600') => {
 
 const verifyAccessToken = (token) => {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET);
-  } catch {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('✅ [JWT] Access token verified successfully:', {
+      userId: decoded.userId,
+      exp: new Date(decoded.exp * 1000).toISOString(),
+      iat: new Date(decoded.iat * 1000).toISOString(),
+      expiresIn: Math.round((decoded.exp - decoded.iat) / 60) + ' minutes'
+    });
+    return decoded;
+  } catch (error) {
+    console.error('❌ [JWT] Access token verification failed:', {
+      error: error.message,
+      name: error.name,
+      tokenPreview: token ? token.substring(0, 50) + '...' : 'none',
+      secret: process.env.JWT_SECRET ? '***set***' : '***NOT SET***'
+    });
     return null;
   }
 };
