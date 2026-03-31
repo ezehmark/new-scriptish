@@ -380,15 +380,7 @@ export default function ReferringHospitalDashboard() {
                             <h3 className="font-semibold text-foreground truncate">
                               {clinic.name}
                             </h3>
-                            <div className='flex grid-cols-3 w-full bg-red-400 gap-2'>
-
-                              {clinic.treatmentTypesOfferd?.length>0&&
-                              clinic.treatmentTypesOffered.map(treatment=>
-                              <button key={treatment} 
-                              className="text-xs text-foreground/75 truncate font-medium">
-                              {treatment}
-                            </button>)}
-                            </div>
+                     
                           </div>
                           <div
                             className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
@@ -401,7 +393,19 @@ export default function ReferringHospitalDashboard() {
                           >
                             {clinic.status}
                           </div>
+                          
                         </div>
+                        <div>Treatments offered</div>
+
+                               <div className='flex w-full p-2 overflow-hidden overflow-x-auto gap-2'>
+                                
+                              {clinic.treatmentTypesOffered?.length>0&&
+                              clinic.treatmentTypesOffered.map((treatment)=>
+                              <button key={treatment} 
+                              className="text-xs text-accent rounded-lg shadow-sm bg-accent/10 p-2 font-medium">
+                              {treatment}
+                            </button>)}
+                            </div>
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-foreground/75 font-medium">
                             Refs: {clinic.referralCount}

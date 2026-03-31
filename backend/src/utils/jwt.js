@@ -2,11 +2,11 @@ const jwt = require('jsonwebtoken');
 
 const generateAccessToken = (payload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRATION || '3600',
+    expiresIn: '3600',  // 1 hour - hardcoded
   });
   console.log('🔐 [JWT] Generated access token:', {
     userId: payload.userId,
-    expiresIn: process.env.JWT_EXPIRATION || '3600',
+    expiresIn: '3600 seconds (1 hour)',
     secret: process.env.JWT_SECRET ? '***set***' : '***NOT SET***'
   });
   return token;
@@ -14,7 +14,7 @@ const generateAccessToken = (payload) => {
 
 const generateRefreshToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION || '604800',
+    expiresIn: '604800',  // 7 days - hardcoded
   });
 };
 

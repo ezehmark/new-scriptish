@@ -90,6 +90,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
           console.log('✅ [fetchClinics] Token refreshed successfully, retrying fetch...');
           // Retry fetching clinics with new token
           allClinics = await authService.fetchAllClinics();
+          console.log('Clinic one treatmentTypesOffered:',allClinics[0].treatmentTypesOffered)
         } else {
           console.log('❌ [fetchClinics] Token refresh failed, redirecting to login');
           localStorage.removeItem('hospital');
