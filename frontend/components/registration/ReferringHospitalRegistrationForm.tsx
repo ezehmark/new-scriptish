@@ -249,6 +249,7 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
         temporaryToken: response.temporaryToken,
       });
     } catch (error) {
+      console.log(error)
       const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please try again.';
       setApiError(errorMessage);
       setIsSubmitting(false);
@@ -299,7 +300,7 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
           
           <div>
             <Label htmlFor="name" className="block text-sm font-medium mb-2">
-              Agency Name <span className="text-destructive">*</span>
+              Hospital Name <span className="text-destructive">*</span>
             </Label>
             <Input
               id="name"
