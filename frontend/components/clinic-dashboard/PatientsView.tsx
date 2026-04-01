@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Users, ArrowLeft, Plus, ZoomIn, Expand, LucideExpand, Maximize } from 'lucide-react';
+import { Users, ArrowLeft, Plus, ZoomIn, Expand, LucideExpand, Maximize, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PatientDetailModal from '@/components/PatientDetailModal';
 
 interface PatientsViewProps {
+  patients:any[];
+  patientsError:string;
+  patientsLoading:boolean;
   onBack?: () => void;
 }
 
@@ -33,7 +36,7 @@ const mockPatients = [
   },
 ];
 
-export default function PatientsView({ onBack }: PatientsViewProps) {
+export default function PatientsView({ onBack, patientsLoading, patientsError, patients }: PatientsViewProps) {
   const [selectedPatient, setSelectedPatient] = useState<typeof mockPatients[0] | null>(null);
 
   return (
@@ -54,6 +57,7 @@ export default function PatientsView({ onBack }: PatientsViewProps) {
               <div>
                 <h1 className="text-3xl font-bold text-accent">Patients</h1>
                 <p className="text-foreground/75">Manage and track all patients</p>
+                {patientsLoading&&<Loader className='h-5 w-5 animate-spin'/>}
               </div>
             </div>
             <Button className="bg-accent hover:bg-accent/90 text-primary font-semibold gap-2 w-full sm:w-auto">
@@ -76,7 +80,7 @@ export default function PatientsView({ onBack }: PatientsViewProps) {
               </div>
 
               <div className="space-y-3">
-                {mockPatients.map((patient) => (
+                {patients.length>0&& patients.map((patient) => (
                   <div key={patient.id} className="bg-primary/20 border border-border/20 rounded-lg p-2 cursor-pointer px-4 hover:bg-primary/30 relative  transition-colors"
                    onClick={() => setSelectedPatient(patient)}>
                     <Maximize className='absolute h-4 w-4 text-accent/80 right-4 top-4'/>
