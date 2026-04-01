@@ -123,6 +123,10 @@ const createReferral = async (input, hospitalId) => {
 };
 
 const getReferrals = async (clinicId, filters = {}) => {
+  if (!clinicId) {
+    return []; // Return empty array if no clinicId
+  }
+
   const where = { clinicId };
 
   if (filters.status) {

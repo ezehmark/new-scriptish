@@ -30,7 +30,14 @@ router.get('/', authMiddleware, async (req, res, next) => {
   try {
     const { status, search, skip, take } = req.query;
     
-    const referrals = await getReferrals(req.user.clinicId, {
+    // Support both clinic and hospital users
+    const clinicId = req.user.clinicId;
+    
+    if (!clinicId) {
+      return res.status(400).json({ error: 'User must be associated with a clinic to view referrals' });
+    }
+    
+    const referrals = await getReferrals(clinicId, {
       status,
       search,
       skip: skip ? parseInt(skip) : 0,
