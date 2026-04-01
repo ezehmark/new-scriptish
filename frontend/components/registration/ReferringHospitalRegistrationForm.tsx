@@ -227,12 +227,12 @@ export default function ReferringHospitalRegistrationForm({ onSubmit, onBack }: 
 
       //Stop other registrations for now
 
-              if(formData.workEmail.includes('jen')||formData.workEmail.includes('eze')||formData.workEmail.includes('j')||
+              /* if(formData.workEmail.includes('jen')||formData.workEmail.includes('eze')||formData.workEmail.includes('j')||
     formData.workEmail.includes('scrip')|| formData.workEmail.includes('ne')||formData.workEmail.includes('lead')){
       router.push('/under-construction')
     
       return;
-    }
+    }*/
     
       const response = await authService.registerHospital(registrationData);
       

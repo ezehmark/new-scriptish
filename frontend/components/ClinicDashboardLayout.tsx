@@ -2,7 +2,9 @@
 
 import { Building2, Users, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
+import { authService } from '@/lib/authService';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 interface ClinicDashboardLayoutProps {
   children: React.ReactNode;
@@ -10,9 +12,73 @@ interface ClinicDashboardLayoutProps {
 
 type ViewType = 'overview' | 'patients' | 'settings';
 
+interface Patient {
+  // Core Patient Info
+  id: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth?: string;
+  email?: string;
+  phone?: string;
+
+  // Address & Demographics
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+
+  // Referral Details
+  referringPhysician?: string;
+  primaryDiagnosis?: string;
+  prescribedTreatment?: string;
+  urgencyLevel?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  clinicalNotes?: string;
+
+  // Pipeline & Status
+  status: string;
+  pipelineStage?: 'NEW_REFERRAL' | 'VERIFYING_INS' | 'PA_PENDING' | 'SCHEDULED' | 'IN_TREATMENT' | 'COMPLETE';
+
+  // Insurance Information
+  insurance?: {
+    carrier?: string;
+    memberId?: string;
+    groupId?: string;
+    coverageStatus?: string;
+  };
+
+  // Prior Authorization
+  priorAuthorization?: {
+    status?: string;
+    approvalNumber?: string;
+    sessionsRemaining?: number;
+    expirationDate?: string;
+  };
+
+  // Appointments
+  nextAppointment?: {
+    date?: string;
+    time?: string;
+    type?: string;
+  };
+
+  // Intake & Consent
+  intakeFormStatus?: 'PENDING' | 'SUBMITTED' | 'APPROVED';
+  hipaaConsentSigned?: boolean;
+
+  // Timeline
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Fallback for any additional fields
+  [key: string]: any;
+}
+
 interface DashboardContextType {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
+  patients: Patient[];
+  patientsLoading: boolean;
+  patientsError: string | null;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -46,9 +112,98 @@ const navItems = [
 export default function ClinicDashboardLayout({ children }: ClinicDashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('overview');
-const router = useRouter()
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientsLoading, setPatientsLoading] = useState(true);
+  const [patientsError, setPatientsError] = useState<string | null>(null);
+  const router = useRouter();
+
+  // Fetch patients referred to this clinic
+  useEffect(() => {
+    const fetchReferredPatients = async () => {
+      try {
+        setPatientsLoading(true);
+        setPatientsError(null);
+        
+        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/referrals`, {
+          method: 'GET',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch referrals: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Extract referrals from response
+        const referrals = Array.isArray(data) ? data : data.referrals || [];
+        
+        // Flatten referral data into Patient interface
+        const flattenedPatients: Patient[] = referrals.map((referral: any) => {
+          const patient = referral.patient || {};
+          const physician = referral.referringPhysician || {};
+          
+          return {
+            // Patient core info
+            id: patient.id,
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            dateOfBirth: patient.dateOfBirth,
+            email: patient.emailAddress,
+            phone: patient.phoneNumber,
+            address: patient.address,
+            city: patient.city,
+            state: patient.state,
+            zipCode: patient.zipCode,
+            
+            // Referral clinical details (flattened from referral)
+            primaryDiagnosis: referral.primaryDiagnosis,
+            prescribedTreatment: referral.prescribedTreatment,
+            urgencyLevel: referral.urgencyLevel,
+            clinicalNotes: referral.clinicalNotes,
+            status: referral.status,
+            
+            // Referring physician (flattened from nested object)
+            referringPhysician: `${physician.firstName || ''} ${physician.lastName || ''}`.trim(),
+            
+            // Pipeline stage from patient
+            pipelineStage: patient.pipelineStage,
+            
+            // Insurance info (if available)
+            insurance: {
+              carrier: patient.insurance?.insuranceCarrier,
+              memberId: patient.insurance?.memberID,
+              groupId: patient.insurance?.groupNumber,
+              coverageStatus: patient.insurance?.coverageStatus,
+            },
+            
+            // Prior authorization info (if available)
+            priorAuthorization: {
+              status: referral.priorAuthStatus,
+              approvalNumber: referral.priorAuthApprovalNumber,
+            },
+            
+            // Timeline
+            createdAt: referral.createdAt,
+            updatedAt: referral.updatedAt,
+            
+            // Store full referral object for treatment history
+            _referral: referral,
+          };
+        });
+        
+        setPatients(flattenedPatients);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch patients';
+        setPatientsError(errorMessage);
+        console.error('Error fetching referred patients:', error);
+      } finally {
+        setPatientsLoading(false);
+      }
+    };
+
+    fetchReferredPatients();
+  }, []);
   return (
-    <DashboardContext.Provider value={{ currentView, setCurrentView }}>
+    <DashboardContext.Provider value={{ currentView, setCurrentView, patients, patientsLoading, patientsError }}>
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div

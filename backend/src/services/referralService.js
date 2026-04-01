@@ -59,11 +59,11 @@ const createReferral = async (input, hospitalId) => {
   if (input.insurance) {
     await prisma.insuranceInformation.create({
       data: {
-        patient: { connect: { id: patient.id } },
-        carrier: input.insurance.carrier,
-        memberId: input.insurance.memberId,
+        patientId: patient.id,
+        insuranceCarrier: input.insurance.carrier || input.insurance.insuranceCarrier,
+        memberID: input.insurance.memberId || input.insurance.memberID,
         groupNumber: input.insurance.groupNumber,
-        planType: input.insurance.planType,
+        planType: input.insurance.planType || 'PPO',
       },
     });
   }
