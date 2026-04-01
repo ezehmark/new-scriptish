@@ -102,7 +102,7 @@ const registerClinic = async (input) => {
     role: 'CLINIC_ADMIN',
   };
 
-  const temporaryToken = generateTemporaryToken(tokenPayload, '600'); // 10 minutes
+  const temporaryToken = generateTemporaryToken(tokenPayload); // 10 minutes
 
   return {
     clinicId: clinic.id,
@@ -317,7 +317,7 @@ const forgotPassword = async (input) => {
       email: user.email,
       role: user.role,
     },
-    '3600' // 1 hour
+    '1h' // 1 hour
   );
 
   // Store reset token
@@ -439,8 +439,8 @@ const registerHospital = async (input) => {
     role: 'HOSPITAL_ADMIN',
   };
 
-  const temporaryToken = generateTemporaryToken(tokenPayload, '600'); // 10 minutes
-const accessToken = generateAccessToken('tokenPayload')
+  const temporaryToken = generateTemporaryToken(tokenPayload, '10m'); // 10 minutes
+  const accessToken = generateAccessToken(tokenPayload)
   return {
     ...hospital,
     temporaryToken,
