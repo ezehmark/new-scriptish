@@ -436,7 +436,7 @@ const registerHospital = async (input) => {
     userId: user?.id || '',
     hospitalId: hospital.id,
     email: input.hospital.workEmail,
-    role: 'CLINIC_ADMIN',
+    role: 'HOSPITAL_ADMIN',
   };
 
   const temporaryToken = generateTemporaryToken(tokenPayload, '600'); // 10 minutes
