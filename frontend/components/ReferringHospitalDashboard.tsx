@@ -99,7 +99,7 @@ const MOCK_CLINIC_PARTNERS: ClinicPartner[] = [
 ];
 
 const MOCK_REFERRALS: Referral[] = [
-  {
+ /* {
     id: 'ref_001',
     patientName: 'Mark Johnson',
     patientDOB: '1985-03-15',
@@ -142,7 +142,7 @@ const MOCK_REFERRALS: Referral[] = [
     referralDate: '2026-03-01',
     urgency: 'routine',
     diagnosis: 'Chronic pain management',
-  },
+  },*/
 ];
 
 const getStatusLabel = (status: string) => {
@@ -354,7 +354,7 @@ export default function ReferringHospitalDashboard() {
           <div className="lg:col-span-1">
             <div className="relative group">
               <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"
+                className="absolute overflow-hidden overflow-y-auto max-h-[200px] rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity"
                 style={{
                   background:
                     'radial-gradient(circle at top right, rgba(51, 211, 191, 0.2), transparent)',
@@ -362,14 +362,20 @@ export default function ReferringHospitalDashboard() {
               />
               <Card className="relative z-10 border border-border/30 bg-primary/10 backdrop-blur-sm overflow-hidden">
                 <div className="p-6">
-                  <div className="flex items-center gap-2 mb-6">
+                  <div className="flex items-center justify-between items-center gap-2 mb-6">
+                    <div className='flex gap-2 items-center'>
                     <Building2 className="w-5 h-5 text-primary" />
                     <h2 className="text-lg font-bold text-primary">
                       Partner Clinics
                     </h2>
+                    </div>
+                    <span className=" text-xs bg-accent/20 text-accent px-2 py-1 rounded-full border border-accent/30">
+                      {clinics.length} total
+                    </span>
+                    
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 h-[400px] overflow-hidden overflow-y-auto">
                     {clinics.length>0&&clinics.map((clinic) => (
                       <div
                         key={clinic.id}
@@ -489,9 +495,9 @@ export default function ReferringHospitalDashboard() {
                   </div>
 
                   {/* Referrals List */}
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {filteredReferrals.length > 0 ? (
-                      filteredReferrals.map((ref) => (
+                  <div className="space-y-3 h-[500px] overflow-hidden overflow-y-auto max-h-96 overflow-y-auto">
+                    {MOCK_REFERRALS.length > 0 ? (
+                      MOCK_REFERRALS.map((ref) => (
                         <div
                           key={ref.id}
                           className="group/referral p-4 rounded-xl border border-border/20 bg-background/30 hover:border-accent/10 hover:bg-primary/30 transition-all cursor-pointer"

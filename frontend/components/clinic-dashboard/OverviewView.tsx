@@ -8,11 +8,11 @@ import { useState } from 'react';
 
 const pipelineStages = [
   { id: 'new-referral', label: 'New Referral', color: 'bg-blue-100 dark:bg-blue-950' },
-  { id: 'verifying-ins', label: 'Verifying Insurance', color: 'bg-purple-100 dark:bg-purple-950' },
+  { id: 'verifying-ins', label: 'Verifying Insurance', color: 'bg-yellow-100 dark:bg-yellow-950' },
   { id: 'pa-pending', label: 'PA Pending', color: 'bg-orange-100 dark:bg-orange-950' },
-  { id: 'scheduled', label: 'Scheduled', color: 'bg-green-100 dark:bg-green-950' },
-  { id: 'in-treatment', label: 'In Treatment', color: 'bg-red-100 dark:bg-red-950' },
-  { id: 'complete', label: 'Complete', color: 'bg-emerald-100 dark:bg-emerald-950' },
+  { id: 'scheduled', label: 'Scheduled', color: 'bg-cyan-100 dark:bg-cyan-950' },
+  { id: 'in-treatment', label: 'In Treatment', color: 'bg-purple-100 dark:bg-purple-950' },
+  { id: 'complete', label: 'Complete', color: 'bg-green-100 dark:bg-green-950' },
 ];
 
 const mockAlerts = [
