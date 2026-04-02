@@ -416,7 +416,7 @@ export default function ReferringHospitalDashboard() {
                           <span className="text-foreground/75  font-medium">
                             Refs: {clinic.referralCount}
                           </span>
-                          {/* <Eye className="w-4 h-4 text-accent opacity-0 group-hover/clinic:opacity-100 transition-opacity" /> */}
+                          
                         </div>
                       </div>
                     ))}
