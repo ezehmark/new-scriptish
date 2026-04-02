@@ -21,7 +21,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: 'Target clinicId is required' });
     }
 
-    const result = await createReferral({ ...referralData, clinicId }, req.user.clinicId || req.user.hospitalId);
+    const result = await createReferral(req.body, req.user.clinicId || req.user.hospitalId);
     console.log('✅ [REFERRALS] Referral created successfully:', result.id);
     res.status(201).json(result);
   } catch (error) {
@@ -32,27 +32,20 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
 // GET /referrals - List referrals for clinic
 router.get('/', authMiddleware, async (req, res, next) => {
+  console.log('Started to fetch referrals')
   try {
-    const { status, search, skip, take } = req.query;
-    
     // Support both clinic and hospital users
     const clinicId = req.user.clinicId;
     
     console.log('📋 [REFERRALS] GET /referrals endpoint called');
     console.log('👤 [REFERRALS] User:', { userId: req.user.id, clinicId, role: req.user.role });
-    console.log('🔍 [REFERRALS] Query params:', { status, search, skip, take });
     
     if (!clinicId) {
       console.error('❌ [REFERRALS] No clinic ID found for user');
       return res.status(400).json({ error: 'User must be associated with a clinic to view referrals' });
     }
     
-    const referrals = await getReferrals(clinicId, {
-      status,
-      search,
-      skip: skip ? parseInt(skip) : 0,
-      take: take ? parseInt(take) : 50,
-    });
+    const referrals = await getReferrals(clinicId);
 
     console.log('✅ [REFERRALS] Successfully fetched referrals count:', referrals.length);
     console.log('📦 [REFERRALS] Response:', referrals);

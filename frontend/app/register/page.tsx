@@ -83,7 +83,7 @@ export default function RegisterPage() {
   return (
     <main className="w-full min-h-screen bg-gradient-to-b from-background via-background to-background/95">
      
-         <Link href="/" className="text-xl absolute top-4 left-4 sm:text-2xl font-bold bg-gradient-to-r from-primary/20 via-primary to-primary/20 text-transparent bg-clip-text ">
+         <Link href="/" className="text-xl absolute top-4 left-4 sm:text-2xl font-bold bg-gradient-to-r from-primary/10 via-primary to-primary/10 moveBg text-transparent bg-clip-text ">
               Scriptish
             </Link>
 

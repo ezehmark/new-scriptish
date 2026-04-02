@@ -270,8 +270,8 @@ export default function ReferralCreationPage({
       {/* Success Alert */}
       {successMessage && (
         <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex gap-3">
-          <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <span className="text-sm font-bold text-green-400">✓</span>
+          <div className="w-5 h-5 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center mt-0.5">
+            <div className="text-sm font-bold text-green-400">✓</div>
           </div>
           <div>
             <p className="text-sm font-medium text-green-300">{successMessage}</p>
@@ -568,7 +568,7 @@ export default function ReferralCreationPage({
               <SelectTrigger className="bg-background/50 border-border/30 text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-border/30">
+              <SelectContent className=" border-border/30">
                 {URGENCY_LEVELS.map((level) => (
                   <SelectItem key={level.id} value={level.id}>
                     {level.label}

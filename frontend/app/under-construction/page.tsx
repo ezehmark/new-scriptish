@@ -58,11 +58,12 @@ export default function DevOngoingScreen() {
           height: '500px',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(23, 24, 126, 0.83) 0%, transparent 70%)',
-          top: '50%',
-          left: '50%',
+            'radial-gradient(circle, rgba(23, 25, 126, 0.42) 0%, transparent 70%)',
+          top: mousePos.y,
+          left: mousePos.x,
           transform: 'translate(-50%, -50%)',
           pointerEvents: 'none',
+          transition: 'top 0.1s ease-out, left 0.1s ease-out',
         }}
       />
 

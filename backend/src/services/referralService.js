@@ -3,7 +3,7 @@ const { NotFoundError, ValidationError, ConflictError } = require('../middleware
 const { generateVerificationCode } = require('../utils/password');
 const { sendPatientPortalLoginLink } = require('../utils/email');
 
-const createReferral = async (input, hospitalId) => {
+const createReferral = async (input) => {
   // Validate required fields
   if (!input.patientInfo || !input.referringPhysician || !input.clinical) {
     throw new ValidationError('Missing required fields: patientInfo, referringPhysician, clinical');

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, TicketCheck } from 'lucide-react';
 import ReferralCreationForm from '@/components/registration/ReferralCreationForm';
 import { useDashboardView } from '@/components/HospitalDashboardLayout';
 
@@ -58,28 +58,18 @@ export default function ReferralsView({ onBack }: ReferralsViewProps) {
           />
         ) : (
           <div className="bg-primary/10 border border-border/30 rounded-2xl p-12 text-center">
-            <div className="inline-block w-16 h-16 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-accent"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+            <div className=" mx-auto w-16 h-16 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center mb-4">
+
+            <div className="text-[40px] font-bold items-center justify-center flex text-center text-green-400">✓</div>
+          
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Referral Submitted</h2>
+            <h2 className="text-2xl font-bold text-primary mb-2">Referral Submitted</h2>
             <p className="text-foreground/75 mb-6">
               Your referral has been successfully submitted to the clinic.
             </p>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-block px-6 py-2 bg-accent hover:bg-accent/90 text-primary font-semibold rounded-lg transition-colors"
+              className="inline-block px-6 py-2 cursor-pointer bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg transition-colors"
             >
               Create Another
             </button>
