@@ -192,7 +192,13 @@ export default function LoginPage() {
         password,
       });
 
-      console.log('Response data for this login:',response)
+
+      console.log('Response data for this login:',JSON.stringify(response));
+
+      if(response.user.email!=='bytance@clinic.com'){
+        router.push('/under-construction');
+        return;
+      }
 
       // Store tenant information and route accordingly
       if (response.hospitalId) {
