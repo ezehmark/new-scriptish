@@ -9,6 +9,7 @@ export default function JoinWaitlistPage() {
     const cardRef=useRef(null);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const[submitting,setSubmitting]=useState(false)
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,13 +22,17 @@ export default function JoinWaitlistPage() {
     // Simulate API call
 
     try{
-    const response = await axios.post('https://scriptishrxnewmark.onrender.com/v1/waitlist',
-        {email}
-    );
-}
-catch(err){
-    console.log('Error joining waitlist: ',err)
-}
+      setSubmitting(true)
+      const response = await axios.post('https://scriptishrxnewmark.onrender.com/v1/waitlist', { email });
+      setSubmitted(true);
+      setEmail('');
+      setSubmitting(false)
+    }
+    catch(err){
+      setSubmitting(false)
+      setError(err instanceof Error ? err.message : 'Failed to join waitlist. Please try again.');
+      console.log('Error joining waitlist:', err);
+    }
     
   };
 
@@ -63,6 +68,7 @@ catch(err){
             />
             {error && <div className="text-red-500 text-sm text-center">{error}</div>}
             <button
+            disabled={submitting}
               type="submit"
               className="bg-primary cursor-pointer text-white font-semibold rounded-lg py-3 mt-2 hover:bg-brand/90 transition-colors text-lg"
             >

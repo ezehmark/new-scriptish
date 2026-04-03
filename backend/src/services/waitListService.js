@@ -5,9 +5,7 @@ const joinWaitList=async(data)=>{
         where:{email:data.email}
     })
     if(existingEmail){
-        throw new ExistingReferralError('The email user has already joined the waitlist')
-
-
+        throw new Error('The email has already joined the waitlist')
     }
 
     const newJoin = await prisma.waitList.create({
