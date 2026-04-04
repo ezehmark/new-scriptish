@@ -198,11 +198,11 @@ export default function LoginPage() {
       console.log('Response data for this login:',JSON.stringify(response));
       console.log('Admin eamil:',response.user.email);
      
-      // Check if user is authorized
+      /* Check if user is authorized
       if(response.user.email !== 'bytance@clinic.com' && response.user.email !== 'ezehmark5@bytpay.com'){
         router.push('/under-construction');
         return;
-      }
+      }*/
 
       // Store tenant information and route accordingly
       if (response.hospitalId) {

@@ -77,6 +77,8 @@ type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
 
 interface DashboardContextType {
   currentView: ViewType;
+  patientsLoading:boolean;
+  patients:any[];
   setCurrentView: (view: ViewType) => void;
   hospital: object;
   setHospital: (hospital: any) => void;
@@ -188,7 +190,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
             const flattenedPatients: Patient[] = referrals.map((referral: any) => {
               const patient = referral.patient || {};
               const physician = referral.referringPhysician || {};
-              
+              const clinic =referral.clinic || {}
               return {
                 // Patient core info
                 id: patient.id,
@@ -201,6 +203,11 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
                 city: patient.city,
                 state: patient.state,
                 zipCode: patient.zipCode,
+                
+                //Clinic details
+                clinicId:clinic.id,
+                clinicName:clinic.name,
+
                 
                 // Referral clinical details (flattened from referral)
                 primaryDiagnosis: referral.primaryDiagnosis,
@@ -260,39 +267,34 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
     const fetchClinics = async () => {
        setLoadingClinics(true);
       console.log('🔍 [fetchClinics] Starting clinics fetch...');
-      let allClinics = await authService.fetchAllClinics();
       
-      // Check if token is expired (authService returns { isTokenExpired: true })
-      if (allClinics && typeof allClinics === 'object' && allClinics.isTokenExpired) {
-        console.log('⚠️ [fetchClinics] Token expired detected, attempting to refresh...');
-        
-        // Try to refresh the token
-        const refreshSuccess = await authService.refreshAccessToken();
-        
-        if (refreshSuccess) {
-          console.log('✅ [fetchClinics] Token refreshed successfully, retrying fetch...');
-          // Retry fetching clinics with new token
-          allClinics = await authService.fetchAllClinics();
-          console.log('Clinic one treatmentTypesOffered:',allClinics[0].treatmentTypesOffered)
-        } else {
-          setLoadingClinics(false)
-          console.log('❌ [fetchClinics] Token refresh failed, redirecting to login');
-          localStorage.removeItem('hospital');
-          localStorage.removeItem('hospitalAdmin');
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          router.push('/login');
+      try {
+        const apiUrl = 'https://scriptishrxnewmark.onrender.com/v1';
+        const response = await fetchWithAuth(`${apiUrl}/clinics`, {
+          method: 'GET',
+        });
+
+        if (!response.ok) {
+          console.error(`❌ Failed to fetch clinics: ${response.status} ${response.statusText}`);
+          setClinics([]);
           return;
         }
+
+        const allClinics = await response.json();
+        console.log('Clinic one treatmentTypesOffered:', allClinics[0]?.treatmentTypesOffered);
+        setClinics(allClinics || []);
+        console.log('✅ [fetchClinics] All clinics fetched:', allClinics);
+      } catch (error) {
+        console.error('💥 Error fetching clinics:', error);
+        setClinics([]);
+      } finally {
+        setLoadingClinics(false);
       }
-      
-      setClinics(allClinics || []);
-      console.log('✅ [fetchClinics] All clinics fetched:', allClinics);
     };
     fetchClinics();
   }, [router]);
   return (
-    <DashboardContext.Provider value={{ currentView, loadingClinics, setCurrentView, hospital, setHospital, hospitalId, clinics, setClinics }}>
+    <DashboardContext.Provider value={{ currentView, loadingClinics, setCurrentView, patientsLoading, hospital, patients, setHospital, hospitalId, clinics, setClinics }}>
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div

@@ -275,11 +275,11 @@ export default function ClinicRegistrationForm({ onSubmit, onBack }: ClinicRegis
      console.log('Registration of clinic successul:',response)
 
       
-     if(response.email!=='scriptishrxapp@app.com'){
+    /* if(response.email!=='scriptishrxapp@app.com'){
       router.push('/under-construction')
   
       return;
-    }
+    }*/
 
 
       
