@@ -1,15 +1,18 @@
 import { Badge } from '@/components/ui/badge';
 
 interface PatientCardProps {
-  name: string;
-  treatmentType: string;
+  firstName: string;
+  lastName:string;
+  prescribedTreatment: string;
   referringPhysician: string;
-  insuranceStatus: 'verified' | 'pending' | 'failed';
-  paStatus: 'approved' | 'pending' | 'denied';
-  intakeStatus: 'complete' | 'pending';
-  consentStatus: 'signed' | 'pending';
-  nextAction: string;
-  assignedStaff: string;
+  primaryDiagnosis:string;
+ clinicalNotes: 'verified' | 'pending' | 'failed';
+  //paStatus: 'approved' | 'pending' | 'denied';
+ // intakeStatus: 'complete' | 'pending';
+  // consentStatus: 'signed' | 'pending';
+  createdAt:Date;
+  // nextAction: string;
+  // assignedStaff: string;
   appointmentDate?: string;
   onClick?: () => void;
 }
@@ -25,15 +28,13 @@ const statusColors = {
 };
 
 export default function PatientCard({
-  name,
-  treatmentType,
+  firstName,
+  lastName,
+  prescribedTreatment,
   referringPhysician,
-  insuranceStatus,
-  paStatus,
-  intakeStatus,
-  consentStatus,
-  nextAction,
-  assignedStaff,
+  primaryDiagnosis,
+  clinicalNotes,
+  createdAt,
   appointmentDate,
   onClick,
 }: PatientCardProps) {
@@ -47,63 +48,50 @@ export default function PatientCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-foreground">{name}</h3>
-          <p className="text-sm text-foreground/60 mt-1">{treatmentType}</p>
+          <h3 className="text-lg font-semibold text-foreground">{`${firstName} ${lastName}`}</h3>
+          <p className="text-sm text-foreground/60 mt-1">{primaryDiagnosis}</p>
         </div>
-        <Badge variant="outline" className="text-xs">
-          {intakeStatus === 'complete' ? '✓' : '⏳'} Intake
+        <Badge
+          variant="outline"
+          className={`text-xs ${statusColors[clinicalNotes]}`}
+        >
+          Last Referral
         </Badge>
       </div>
 
-      {/* Physician and Staff */}
+      {/* Treatment and Physician */}
       <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-border/20">
+        <div>
+          <p className="text-xs text-foreground/50 uppercase tracking-wide">Treatment</p>
+          <p className="text-sm font-medium text-foreground">{prescribedTreatment}</p>
+        </div>
         <div>
           <p className="text-xs text-foreground/50 uppercase tracking-wide">Referring MD</p>
           <p className="text-sm font-medium text-foreground">{referringPhysician}</p>
         </div>
-        <div>
-          <p className="text-xs text-foreground/50 uppercase tracking-wide">Assigned Staff</p>
-          <p className="text-sm font-medium text-foreground">{assignedStaff}</p>
-        </div>
       </div>
 
-      {/* Status Indicators */}
+      {/* Clinical Notes Status */}
       <div className="space-y-2 mb-4">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-foreground/70">Insurance</span>
+          <span className="text-foreground/70">Clinical Notes</span>
           <Badge
             variant="outline"
-            className={`text-xs ${statusColors[insuranceStatus as keyof typeof statusColors]}`}
+            className={`text-xs ${statusColors[clinicalNotes]}`}
           >
-            {insuranceStatus.charAt(0).toUpperCase() + insuranceStatus.slice(1)}
-          </Badge>
-        </div>
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-foreground/70">Prior Auth</span>
-          <Badge
-            variant="outline"
-            className={`text-xs ${statusColors[paStatus as keyof typeof statusColors]}`}
-          >
-            {paStatus.charAt(0).toUpperCase() + paStatus.slice(1)}
-          </Badge>
-        </div>
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-foreground/70">Consent Form</span>
-          <Badge
-            variant="outline"
-            className={`text-xs ${statusColors[consentStatus as keyof typeof statusColors]}`}
-          >
-            {consentStatus === 'signed' ? 'Signed' : 'Pending'}
+            {clinicalNotes.charAt(0).toUpperCase() + clinicalNotes.slice(1)}
           </Badge>
         </div>
       </div>
 
-      {/* Next Action & Appointment */}
+      {/* Created and Appointment Dates */}
       <div className="bg-brand/5 border border-brand/20 rounded-lg p-3 mt-4">
-        <p className="text-xs text-foreground/60 uppercase tracking-wide mb-1">Next Action</p>
-        <p className="text-sm font-semibold text-foreground mb-2">{nextAction}</p>
+        <p className="text-xs text-foreground/60 uppercase tracking-wide mb-1">Dates</p>
+        <p className="text-xs text-foreground mb-2">
+          Created: {typeof createdAt === 'string' ? createdAt : new Date(createdAt).toLocaleDateString()}
+        </p>
         {appointmentDate && (
-          <p className="text-xs text-brand font-medium">📅 {appointmentDate}</p>
+          <p className="text-xs text-brand font-medium">📅 Appointment: {appointmentDate}</p>
         )}
       </div>
     </div>

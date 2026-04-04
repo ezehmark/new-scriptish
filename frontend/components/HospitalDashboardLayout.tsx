@@ -5,10 +5,73 @@ import { Building2, BarChart3, Users, Settings, LogOut, Menu, X } from 'lucide-r
 import { useState, useEffect, createContext, useContext, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/authService';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 interface HospitalDashboardLayoutProps {
   children: React.ReactNode;
 }
+
+interface Patient {
+  // Core Patient Info
+  id: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth?: string;
+  email?: string;
+  phone?: string;
+
+  // Address & Demographics
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+
+  // Referral Details
+  referringPhysician?: string;
+  primaryDiagnosis?: string;
+  prescribedTreatment?: string;
+  urgencyLevel?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  clinicalNotes?: string;
+
+  // Pipeline & Status
+  status: string;
+  pipelineStage?: 'NEW_REFERRAL' | 'VERIFYING_INS' | 'PA_PENDING' | 'SCHEDULED' | 'IN_TREATMENT' | 'COMPLETE';
+
+  // Insurance Information
+  insurance?: {
+    carrier?: string;
+    memberId?: string;
+    groupId?: string;
+    coverageStatus?: string;
+  };
+
+  // Prior Authorization
+  priorAuthorization?: {
+    status?: string;
+    approvalNumber?: string;
+    sessionsRemaining?: number;
+    expirationDate?: string;
+  };
+
+  // Appointments
+  nextAppointment?: {
+    date?: string;
+    time?: string;
+    type?: string;
+  };
+
+  // Intake & Consent
+  intakeFormStatus?: 'PENDING' | 'SUBMITTED' | 'APPROVED';
+  hipaaConsentSigned?: boolean;
+
+  // Timeline
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Fallback for any additional fields
+  [key: string]: any;
+}
+
 
 type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
 
@@ -19,6 +82,8 @@ interface DashboardContextType {
   setHospital: (hospital: any) => void;
   clinics: any[];
   setClinics: (clinics: any[]) => void;
+  hospitalId: string;
+  loadingClinics: boolean;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -60,18 +125,131 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
   const [currentView, setCurrentView] = useState<ViewType>('overview');
   const [hospital, setHospital] = useState({});
   const [clinics, setClinics] = useState<any[]>([]);
-  const[loadingClinics,setLoadingClinics]=useState(false)
+  const[loadingClinics,setLoadingClinics]=useState(false);
+  const [hospitalId, setHospitalId] = useState('');
   
-  useEffect(() => {
-    if (window && typeof window !== 'undefined') {
+
+  const [patients, setPatients] = useState<Patient[]>([]);
+    const [patientsLoading, setPatientsLoading] = useState(true);
+    const [patientsError, setPatientsError] = useState<string | null>(null);
+
+
+
+
+     // Fetch patients referred to this clinic
+      useEffect(() => {
+         if (window && typeof window !== 'undefined') {
       const hospitalString = localStorage.getItem('hospital');
       console.log('Hospital retrieving from local storage string is', hospitalString);
       if (hospitalString) {
         console.log('Hospital retrieved from local storage', hospitalString);
         const hospitalData = JSON.parse(hospitalString);
         setHospital(hospitalData);
+        localStorage.setItem('hospitalId',hospitalData.id);
+        setHospitalId(hospitalData.id);
+        console.log('Hospital ID set to local storage successfully',hospitalData.id)
       }
     }
+        const fetchReferredPatients = async () => {
+          try {
+            setPatientsLoading(true);
+            setPatientsError(null);
+
+           
+
+           
+            
+            const apiUrl = 'https://scriptishrxnewmark.onrender.com/v1';
+            console.log('Fetching referrals from:', `${apiUrl}/referrals`);
+            
+            const response = await fetchWithAuth(`${apiUrl}/referrals`, {
+              method: 'GET',
+            });
+    
+            if (!response.ok) {
+              throw new Error(`Failed to fetch referrals: ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+            console.log('Referrals response:', data);
+            
+            // Extract referrals from response
+            const referrals = Array.isArray(data) ? data : data.referrals || [];
+            
+            if (!referrals || referrals.length === 0) {
+              console.log('No referrals found');
+              setPatients([]);
+              return;
+            }
+            
+            // Flatten referral data into Patient interface
+            const flattenedPatients: Patient[] = referrals.map((referral: any) => {
+              const patient = referral.patient || {};
+              const physician = referral.referringPhysician || {};
+              
+              return {
+                // Patient core info
+                id: patient.id,
+                firstName: patient.firstName,
+                lastName: patient.lastName,
+                dateOfBirth: patient.dateOfBirth,
+                email: patient.emailAddress,
+                phone: patient.phoneNumber,
+                address: patient.address,
+                city: patient.city,
+                state: patient.state,
+                zipCode: patient.zipCode,
+                
+                // Referral clinical details (flattened from referral)
+                primaryDiagnosis: referral.primaryDiagnosis,
+                prescribedTreatment: referral.prescribedTreatment,
+                urgencyLevel: referral.urgencyLevel,
+                clinicalNotes: referral.clinicalNotes,
+                status: referral.status,
+                
+                // Referring physician (flattened from nested object)
+                referringPhysician: `${physician.firstName || ''} ${physician.lastName || ''}`.trim(),
+                
+                // Pipeline stage from patient
+                pipelineStage: patient.pipelineStage,
+                
+                // Insurance info (if available)
+                insurance: {
+                  carrier: patient.insurance?.insuranceCarrier,
+                  memberId: patient.insurance?.memberID,
+                  groupId: patient.insurance?.groupNumber,
+                  coverageStatus: patient.insurance?.coverageStatus,
+                },
+                
+                // Prior authorization info (if available)
+                priorAuthorization: {
+                  status: referral.priorAuthStatus,
+                  approvalNumber: referral.priorAuthApprovalNumber,
+                },
+                
+                // Timeline
+                createdAt: referral.createdAt,
+                updatedAt: referral.updatedAt,
+                
+                // Store full referral object for treatment history
+                _referral: referral,
+              };
+            });
+            
+            console.log('Flattened patients:', flattenedPatients);
+            setPatients(flattenedPatients);
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to fetch patients';
+            setPatientsError(errorMessage);
+            console.error('Error fetching referred patients:', error);
+          } finally {
+            setPatientsLoading(false);
+          }
+        };
+
+        fetchReferredPatients()
+    
+    
   }, [currentView]);
 
   // Fetch all clinics
@@ -112,7 +290,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
     fetchClinics();
   }, [router]);
   return (
-    <DashboardContext.Provider value={{ currentView, loadingClinics, setCurrentView, hospital, setHospital, clinics, setClinics }}>
+    <DashboardContext.Provider value={{ currentView, loadingClinics, setCurrentView, hospital, setHospital, hospitalId, clinics, setClinics }}>
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Users, ArrowLeft, Plus, ZoomIn, Expand, LucideExpand, Maximize, Loader, Fullscreen, CheckCheck, CheckCircle, RefreshCcw, RefreshCcwIcon } from 'lucide-react';
+import { Users, ArrowLeft, Plus, ZoomIn, Expand, LucideExpand, Maximize, Loader, Fullscreen, CheckCheck, CheckCircle, RefreshCcw, RefreshCcwIcon, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PatientDetailModal from '@/components/PatientDetailModal';
 
@@ -37,12 +37,12 @@ const mockPatients = [
 ];
 
 const pipelineStages = [
-  { id: 'new_referral', label: 'New Referral' },
-  { id: 'insurance', label: 'Insurance' },
-  { id: 'authorization', label: 'Authorization' },
-  { id: 'scheduling', label: 'Scheduling' },
-  { id: 'treatment', label: 'Treatment' },
-  { id: 'followup', label: 'Follow-up' },
+  { id: 'new_referral', detail: 'New Referral',label:'New Referral' },
+  { id: 'insurance', detail: 'Insurance Verification',label:'Insurance' },
+  { id: 'authorization', detail: 'Prior Authorization', label:'Authorization' },
+  { id: 'scheduling', detail: 'Scheduling Treatment',label:'Scheduling' },
+  { id: 'treatment', detail: 'Treatment In Process',label:'Treatment' },
+  { id: 'followup', detail: 'Treatment Follow-ups', label:'Follow-up' },
 ];
 
 
@@ -61,6 +61,8 @@ function getStageStatus(stageId: string, patientStatus: string) {
 export default function PatientsView({ onBack, patientsLoading, patientsError, patients }: PatientsViewProps) {
   const [selectedPatient, setSelectedPatient] = useState<typeof mockPatients[0] | null>(null);
   const [nextStages, setNextStages] = useState<Record<string, string>>({});
+  const [hoveredStage, setHoveredStage] = useState<string | null>(null);
+  const[isHovering,setIsHovering]=useState<boolean | false>(false)
 
   useEffect(() => {
     if (patients.length > 0) {
@@ -128,34 +130,53 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                         <p className="text-primary/95 font-semibold">{patient.firstName + ' ' + patient.lastName}</p>
                        <p className="text-foreground/75 text-sm font-bold mt-1">{patient.prescribedTreatment}</p>
                        {/* CRM Pipeline */}
-                        <div className="flex items-center gap-2 my-3 py-2 overflow-x-auto overflow-hidden"
-                        style={{scrollbarWidth:'thin'}}>
+                        <div className={`flex items-center gap-2 my-3 py-2 overflow-x-auto h-10 rounded-lg hover:bg-primary/2 -pb-10 pl-2 hover:h-20 transition-all items-end overflow-y-visible`}
+
+                        style={{scrollbarWidth:'none'}}>
                           {pipelineStages.map((stage, idx) => {
                             const status = getStageStatus(stage.id, patient.pipelineStage);
                             const nextStage = nextStages[patient.id];
 
                             return (
-                              <div key={stage.id} className="flex items-center">
+                             
+                              <div key={stage.id} className="flex self-end relative">
                                 <div
-                                  className={`${
-                                    status === 'completed'
-                                      ? 'bg-accent text-white'
-                                      : status === 'active'
-                                      ? 'bg-primary text-white border-2 border-gray-300'
-                                      : stage.id==nextStage?'shadow-md'
-                                      :
-                                      'bg-border/30 text-foreground/40'
-                                  } rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap flex items-center justify-center transition-colors`}
-                                >{status=='active'&&
-                                 <CheckCircle className='h-4 mr-2 w-4 text-white'/>}
-                                 {stage.id==nextStage&&
-                                 <div className='h-4 w-4 border-gray-500/30  rounded-full mr-2 border-l-gray-500 border-[2px] flex items-center animate-spin'/>}
-                                  <span className={`${stage.id==nextStage&&'text-gray-600'}`}>{stage.label}</span>
+                                  className="relative"
+                                  onMouseEnter={() => {setHoveredStage(stage.id);setIsHovering(true)}}
+                                  onMouseLeave={() => {setHoveredStage(null);setIsHovering(false)}}
+                                >
+                                  <div
+                                    className={`${
+                                      status === 'completed'
+                                        ? 'bg-accent/80 text-white'
+                                        : status === 'active'
+                                        ? 'bg-primary/80 text-white border-2 border-gray-300'
+                                        : stage.id==nextStage?'shadow-md'
+                                        :
+                                        'bg-border/30 text-foreground/40'
+                                    } rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap flex items-center justify-center transition-colors`}
+                                  >{status=='completed'&&
+                                   <CheckCircle2 className='h-4 mr-2 w-4 text-white'/>}
+                                   {status=='active'&&<div className='h-3 w-3 border-gray-100/30  rounded-full mr-2 border-l-gray-100 border-[2px] flex items-center animate-spin'/>}
+                                   
+                                    <span className={`${stage.id==nextStage&&'text-gray-600'}`}>{stage.label}</span>
+                                  </div>
                                 </div>
+
+                                {/* Tooltip Speech Bubble */}
+                                {hoveredStage === stage.id && (
+                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 z-50 pointer-events-none" style={{whiteSpace: 'nowrap'}}>
+                                    <div className="bg-white text-foreground px-3 py-2 rounded-lg text-xs font-semibold shadow-lg">
+                                      {stage.detail}
+                                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white" />
+                                    </div>
+                                  </div>
+                                )}
                                 {idx < pipelineStages.length - 1 && (
-                                  <div className="w-4 h-0.5 bg-border/50 mx-1" />
+                                  <div className="w-4 h-0.5 bg-border/80 self-center mx-1" />
                                 )}
                               </div>
+                             
                             );
                           })}
                         </div>
@@ -165,7 +186,13 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                       onClick={(e)=>e.stopPropagation()} 
                       className='h-4 w-4 text-primary absolute top-4 right-32'/>
                       <div className="flex items-center gap-3">
-                        <span className={`px-3 py-1 absolute top-3 right-2 rounded-full mr-8 text-xs font-semibold ${patient.urgencyLevel=='ROUTINE'?'bg-primary/20 text-primary':patient.urgencyLevel=='URGENT'?'bg-orange/20 text-orange':'bg-red-500/20 text-red-500'}  border border-accent/30 whitespace-nowrap`}>
+                        <span className={`px-3 py-1 absolute top-3 right-2 rounded-full mr-8 text-xs font-semibold border whitespace-nowrap ${
+                          patient.urgencyLevel === 'ROUTINE' 
+                            ? 'bg-blue-500/20 text-blue-700 border-blue-500/30'
+                            : patient.urgencyLevel === 'URGENT'
+                            ? 'bg-orange-500/20 text-orange-700 border-orange-500/30'
+                            : 'bg-red-500/20 text-red-700 border-red-500/30'
+                        }`}>
                           {patient.urgencyLevel}
                         </span>
                 

@@ -71,9 +71,16 @@ export default function PatientDetailModal({ patient, onClose }: PatientCRMNodeP
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b-[4px] border-primary/80 ">
           <div>
-            <h2 className="text-2xl font-bold text-primary">{patient.firstName + ' ' + patient.lastName}</h2>
+            <h2 className="text-2xl font-bold text-foreground">{patient.firstName + ' ' + patient.lastName}</h2>
           
-               <p className="text-primary/70 text-sm mt-1">Prescribed Treatment <span className='rounded p-1 px-2 bg-accent/10 border-l-[4px] border-primary bg-background/80 text-primary font-bold'>{patient.prescribedTreatment}</span></p>
+               <div className="text-primary/70 text-sm mt-1 flex flex-col">
+               <div>Prescribed Treatment </div>
+               <div className='rounded p-1 px-2 bg-accent/10 border-l-[4px] border-primary bg-background/80 text-primary font-bold'>{patient.prescribedTreatment}</div>
+               </div>
+                <div className="text-primary/70 text-sm mt-1 flex flex-col">
+               <div>Medical Notes </div>
+               <div className='rounded p-1 px-2 bg-accent/10 border-l-[4px] border-primary bg-background/80 text-primary font-bold'>{patient.clinicalNotes}</div>
+               </div>
           </div>
           <button
             onClick={()=>{onClose()}}

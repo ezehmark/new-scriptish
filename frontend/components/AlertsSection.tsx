@@ -44,7 +44,7 @@ export default function AlertsSection({ alerts }: AlertsSectionProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="mx-4 flex grid grid-cols-1 md:grid-cols-2 gap-3">
       {/* Critical Alerts */}
       {criticalAlerts.length > 0 && (
         <div>

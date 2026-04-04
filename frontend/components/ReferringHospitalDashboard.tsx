@@ -28,6 +28,7 @@ import ReferralsView from '@/components/hospital-dashboard/ReferralsView';
 import AnalyticsView from '@/components/hospital-dashboard/AnalyticsView';
 import PartnersView from '@/components/hospital-dashboard/PartnersView';
 import { useDashboardView } from '@/components/HospitalDashboardLayout';
+import PatientsView from './clinic-dashboard/PatientsView';
 
 interface ReferralMetrics {
   totalReferrals: number;
@@ -68,90 +69,15 @@ const MOCK_METRICS: ReferralMetrics = {
   completed: 22,
 };
 
-const MOCK_CLINIC_PARTNERS: ClinicPartner[] = [
-  {
-    id: '1',
-    name: 'Bright Infusion Clinic',
-    specialty: 'IV Therapy',
-    address: '123 Medical Blvd, Chicago, IL',
-    phone: '312-555-0000',
-    referralCount: 18,
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Ketamine Wellness Center',
-    specialty: 'Ketamine Therapy',
-    address: '456 Wellness Ave, NYC, NY',
-    phone: '212-555-1111',
-    referralCount: 12,
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'NAD+ Recovery Clinic',
-    specialty: 'NAD+ Therapy',
-    address: '789 Health St, LA, CA',
-    phone: '323-555-2222',
-    referralCount: 8,
-    status: 'pending',
-  },
-];
 
-const MOCK_REFERRALS: Referral[] = [
- /* {
-    id: 'ref_001',
-    patientName: 'Mark Johnson',
-    patientDOB: '1985-03-15',
-    clinicName: 'Bright Infusion Clinic',
-    treatmentType: 'IV Therapy',
-    status: 'scheduled',
-    referralDate: '2026-03-20',
-    urgency: 'routine',
-    diagnosis: 'Chronic fatigue syndrome',
-  },
-  {
-    id: 'ref_002',
-    patientName: 'Sarah Williams',
-    patientDOB: '1992-07-22',
-    clinicName: 'Ketamine Wellness Center',
-    treatmentType: 'Ketamine Therapy',
-    status: 'pa_pending',
-    referralDate: '2026-03-21',
-    urgency: 'urgent',
-    diagnosis: 'Treatment-resistant depression',
-  },
-  {
-    id: 'ref_003',
-    patientName: 'David Brown',
-    patientDOB: '1978-11-08',
-    clinicName: 'NAD+ Recovery Clinic',
-    treatmentType: 'NAD+ Therapy',
-    status: 'verifying',
-    referralDate: '2026-03-22',
-    urgency: 'routine',
-    diagnosis: 'Mitochondrial dysfunction',
-  },
-  {
-    id: 'ref_004',
-    patientName: 'Jennifer Lee',
-    patientDOB: '1988-05-30',
-    clinicName: 'Bright Infusion Clinic',
-    treatmentType: 'IV Therapy',
-    status: 'completed',
-    referralDate: '2026-03-01',
-    urgency: 'routine',
-    diagnosis: 'Chronic pain management',
-  },*/
-];
 
 const getStatusLabel = (status: string) => {
   const statusMap: Record<string, string> = {
     new: 'New',
-    verifying: 'Verifying Insurance',
-    pa_pending: 'PA Pending',
-    scheduled: 'Scheduled',
-    in_treatment: 'In Treatment',
+    insurance: 'Verifying Insurance',
+    authorization: 'Prior Authorization',
+    scheduling: 'Scheduling',
+    treatment: 'In Treatment',
     completed: 'Completed',
   };
   return statusMap[status] || status;
@@ -187,11 +113,11 @@ const getUrgencyIcon = (urgency: string) => {
 type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
 
 export default function ReferringHospitalDashboard() {
-  const { currentView, hospital, setHospital, loadingClinics, setCurrentView, clinics } = useDashboardView();
+  const { currentView, hospital, setHospital, loadingClinics, patients,setCurrentView, clinics } = useDashboardView();
   const [selectedClinic, setSelectedClinic] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [referrals, setReferrals] = useState<Referral[]>(MOCK_REFERRALS);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
 
   const filteredReferrals = referrals.filter((ref) => {
     const matchesSearch =
@@ -508,7 +434,7 @@ export default function ReferringHospitalDashboard() {
 
                   {/* Referrals List */}
                   <div className="space-y-3 h-[500px] overflow-hidden overflow-y-auto max-h-96 overflow-y-auto">
-                    {MOCK_REFERRALS.length > 0 ? (
+                    {PatientsView.lenght > 0 ? (
                       MOCK_REFERRALS.map((ref) => (
                         <div
                           key={ref.id}

@@ -17,7 +17,7 @@ export default function TopNav() {
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl moveBg sm:text-2xl font-bold bg-gradient-to-r from-primary/10 via-primary/80 to-primary/10 text-transparent bg-clip-text ">
+            <Link href="/" className="text-xl moveBg sm:text-2xl font-bold bg-gradient-to-r from-foreground/10 via-foreground/80 to-foreground/10 text-transparent bg-clip-text ">
               Scriptish
             </Link>
           </div>

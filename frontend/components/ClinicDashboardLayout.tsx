@@ -114,6 +114,7 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
   const [currentView, setCurrentView] = useState<ViewType>('overview');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
+  // const[clinic,setClinic]
   const [patientsError, setPatientsError] = useState<string | null>(null);
   const router = useRouter();
 const[clinic,setClinic]=useState<object | null>(null)
@@ -229,7 +230,7 @@ const[clinic,setClinic]=useState<object | null>(null)
     fetchReferredPatients();
   }, []);
   return (
-    <DashboardContext.Provider value={{ currentView, setCurrentView, patients, patientsLoading, patientsError }}>
+    <DashboardContext.Provider value={{ currentView, clinic, setCurrentView, patients, patientsLoading, patientsError }}>
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div

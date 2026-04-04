@@ -21,7 +21,8 @@ router.post('/', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ error: 'Target clinicId is required' });
     }
 
-    const result = await createReferral(req.body, req.user.clinicId || req.user.hospitalId);
+    // Pass hospitalId from authenticated user when available
+    const result = await createReferral(req.body, req.user.hospitalId);
     console.log('✅ [REFERRALS] Referral created successfully:', result.id);
     res.status(201).json(result);
   } catch (error) {

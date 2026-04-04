@@ -31,7 +31,7 @@ export default function FooterSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-12 sm:mb-16">
           {/* Brand */}
           <div>
-            <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-brand via-accent to-brand bg-clip-text text-transparent mb-4 inline-block">
+            <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground/20 via-foreground to-foreground/20 bg-clip-text text-transparent mb-4 inline-block">
               Scriptish
             </Link>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed mb-6">

@@ -51,7 +51,7 @@
 }
 
  @keyframes pushOutShadow{
-    100%{box-shadow:0px 0px 20px rgba(55,244,33,0.2)}}
+    100%{box-shadow:0px 0px 20px rgba(8, 13, 8, 0.253)}}
 
     .pushShadow{
     animation:pushOutShadow 0.4s ease}

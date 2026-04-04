@@ -213,12 +213,12 @@ export default function PipelineSection() {
                 }`}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/15 hover:bg-primary/30 border border-primary flex items-center justify-center text-accent font-bold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-primary/15 hover:bg-primary/30 border border-primary flex items-center justify-center text-foreground font-bold text-sm">
                     {index + 1}
                   </div>
                   <h3 className="font-semibold text-primary text-sm sm:text-base">{node.label}</h3>
                 </div>
-                <p className="text-xs sm:text-sm text-accent/80 font-semi-bold leading-relaxed">
+                <p className="text-xs sm:text-sm text-foreground/80 font-semi-bold leading-relaxed">
                   {node.description}
                 </p>
               </button>
@@ -228,21 +228,21 @@ export default function PipelineSection() {
 
         {/* Benefits callout */}
         <div className="mt-16 sm:mt-20 lg:mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          <button className="p-6 sm:p-8 rounded-xl border-t shadow-sm bg-accent/5 border-t-[6px] border-accent bg-brand/5 backdrop-blur-sm">
+          <button className="p-6 sm:p-8 rounded-xl border-t shadow-sm bg-accent/5 border-t-[6px] border-foreground bg-brand/5 backdrop-blur-sm">
            
             <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">70% Faster</h3>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">
               Reduce patient processing time from hours to minutes.
             </p>
           </button>
-          <button className="p-6 sm:p-8 rounded-xl border-t shadow-sm bg-accent/5 border-t-[6px] border-accent bg-brand/5 backdrop-blur-sm">
+          <button className="p-6 sm:p-8 rounded-xl border-t shadow-sm bg-accent/5 border-t-[6px] border-foreground bg-brand/5 backdrop-blur-sm">
             
             <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">40% Cost Savings</h3>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">
               Eliminate manual administrative overhead and errors.
             </p>
           </button>
-          <button className="p-6 sm:p-8 rounded-xl border-t border-t-[6px] bg-accent/5 border-t-[6px] border-accent backdrop-blur-sm">
+          <button className="p-6 sm:p-8 rounded-xl border-t border-t-[6px] bg-accent/5 border-t-[6px] border-foreground backdrop-blur-sm">
           
             <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">3x Higher Revenue</h3>
             <p className="text-sm sm:text-base text-foreground/60 leading-relaxed">

@@ -3,10 +3,16 @@ const { NotFoundError, ValidationError, ConflictError } = require('../middleware
 const { generateVerificationCode } = require('../utils/password');
 const { sendPatientPortalLoginLink } = require('../utils/email');
 
-const createReferral = async (input) => {
+const createReferral = async (input, hospitalIdParam) => {
   // Validate required fields
   if (!input.patientInfo || !input.referringPhysician || !input.clinical) {
     throw new ValidationError('Missing required fields: patientInfo, referringPhysician, clinical');
+  }
+
+  // Determine hospitalId: prefer explicit input, fall back to provided param from auth
+  const hospitalId = input.hospitalId || hospitalIdParam;
+  if (!hospitalId) {
+    throw new ValidationError('Missing required field: hospitalId');
   }
 
   // Check if clinic exists
@@ -73,6 +79,8 @@ const createReferral = async (input) => {
     data: {
       patient: { connect: { id: patient.id } },
       clinic: { connect: { id: input.clinicId } },
+      // Ensure hospital relation is set (schema requires hospitalId)
+      hospitalId: hospitalId,
       referringPhysician: { connect: { id: referringPhysician.id } },
       primaryDiagnosis: input.clinical.primaryDiagnosis,
       diagnosisDescription: input.clinical.diagnosisDescription,

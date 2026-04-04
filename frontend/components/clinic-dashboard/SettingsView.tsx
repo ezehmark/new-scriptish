@@ -2,12 +2,17 @@
 
 import { Settings, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useClinicDashboardView } from '../ClinicDashboardLayout';
 
 interface SettingsViewProps {
   onBack?: () => void;
+  clinic:object
 }
 
+
+
 export default function SettingsView({ onBack }: SettingsViewProps) {
+  const{clinic}=useClinicDashboardView()
   return (
     <>
       {/* Header */}
@@ -35,13 +40,13 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
         <div className="space-y-6">
           {/* Clinic Information */}
           <div className="bg-primary/10 border border-border/30 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Clinic Information</h2>
+            <h2 className="text-xl font-bold text-foreground mb-4">Clinic Information</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground/80 mb-2">Clinic Name</label>
                 <input 
                   type="text" 
-                  defaultValue="Bright Infusion Clinic" 
+                  defaultValue={clinic.name} 
                   className="w-full px-4 py-2 bg-background/50 border border-border/30 rounded-lg text-foreground placeholder:text-foreground/40"
                 />
               </div>
@@ -49,7 +54,8 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
                 <label className="block text-sm font-medium text-foreground/80 mb-2">Email</label>
                 <input 
                   type="email" 
-                  defaultValue="contact@brightinfusion.com" 
+                  readOnly
+                  defaultValue={clinic.workEmail}
                   className="w-full px-4 py-2 bg-background/50 border border-border/30 rounded-lg text-foreground placeholder:text-foreground/40"
                 />
               </div>
@@ -66,7 +72,7 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
 
           {/* Operating Hours */}
           <div className="bg-primary/10 border border-border/30 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Operating Hours</h2>
+            <h2 className="text-xl font-bold text-foreground mb-4">Operating Hours</h2>
             <div className="space-y-4">
               {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => (
                 <div key={day} className="flex items-center gap-4">
@@ -94,7 +100,7 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
             <Button variant="outline" className="border-accent/30 text-accent hover:bg-accent/10">
               Cancel
             </Button>
-            <Button className="bg-accent hover:bg-accent/90 text-primary font-semibold">
+            <Button className="bg-accent hover:bg-accent/90 text-background font-semibold">
               Save Changes
             </Button>
           </div>

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, AlertCircle, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, AlertCircle, Plus, Loader2, Hospital } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useDashboardView } from '../HospitalDashboardLayout';
 
 const API_BASE_URL = 'https://scriptishrxnewmark.onrender.com/v1';
 
@@ -50,6 +51,7 @@ interface ReferralFormData {
 
   // Referring physician
   physicianFirstName: string;
+  hospitalId:string;
   physicianLastName: string;
   physicianNPI: string;
   physicianPracticeName: string;
@@ -74,15 +76,19 @@ interface ReferralCreationPageProps {
 }
 
 export default function ReferralCreationPage({
-  hospitalId,
+  
   clinicPartners,
   onBack,
 }: ReferralCreationPageProps) {
+
+ const{hospitalId}=useDashboardView();
+ 
   const [formData, setFormData] = useState<ReferralFormData>({
     patientFirstName: '',
     patientLastName: '',
     patientDOB: '',
     patientPhone: '',
+    hospitalId: hospitalId || '',
     patientEmail: '',
     patientAddress: '',
     patientCity: '',
@@ -105,6 +111,15 @@ export default function ReferralCreationPage({
     clinicalNotes: '',
     targetClinicId: '',
   });
+
+  // Keep formData.hospitalId in sync if context hospitalId loads after mount
+  useEffect(() => {
+    if (hospitalId) {
+      setFormData(prev => ({ ...prev, hospitalId }));
+    }
+  }, [hospitalId]);
+
+ 
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -153,8 +168,15 @@ export default function ReferralCreationPage({
     setApiError('');
 
     try {
+      const effectiveHospitalId = hospitalId || formData.hospitalId;
+      if (!effectiveHospitalId) {
+        setApiError('Hospital not available. Please reload the dashboard.');
+        setIsSubmitting(false);
+        return;
+      }
       const referralPayload = {
         clinicId: formData.targetClinicId,
+        hospitalId: effectiveHospitalId,
         patientInfo: {
           firstName: formData.patientFirstName,
           lastName: formData.patientLastName,
@@ -189,6 +211,8 @@ export default function ReferralCreationPage({
         },
       };
 
+      console.log('Referral payload:',JSON.stringify(referralPayload))
+
       const response = await fetch(`${API_BASE_URL}/referrals`, {
         method: 'POST',
         headers: {
@@ -215,6 +239,7 @@ export default function ReferralCreationPage({
         patientDOB: '',
         patientPhone: '',
         patientEmail: '',
+        hospitalId: hospitalId || '',
         patientAddress: '',
         patientCity: '',
         patientState: '',
@@ -284,7 +309,7 @@ export default function ReferralCreationPage({
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex gap-3">
           <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-300">{apiError}</p>
+            <p className="text-sm font-medium text-red-400">{apiError}</p>
           </div>
         </div>
       )}
