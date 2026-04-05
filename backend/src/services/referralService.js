@@ -231,7 +231,7 @@ const updateReferralStatus = async (id, nextStage, clinicId) => {
   });
 
   const updated = await prisma.referral.update({
-    where: { id: referralId },
+    where: { id },
     data: { status},
     include: {
       patient: true,
