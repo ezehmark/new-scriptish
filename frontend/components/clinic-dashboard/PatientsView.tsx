@@ -79,7 +79,10 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
         else if (currentStage === 'INSURANCE') stages[patient.id] = 'authorization';
         else if (currentStage === 'AUTHORIZATION') stages[patient.id] = 'scheduling';
         else if (currentStage === 'SCHEDULING') stages[patient.id] = 'treatment';
-        else if (currentStage === 'TREATMENT') stages[patient.id] = 'followup';
+        else if (currentStage === 'TREATMENT') stages[patient.id] = 'complete';
+        else if (currentStage==='COMPLETE') stages[patient.id] = 'follow_up';
+         else if (currentStage==='FOLLOW_UP') stages[patient.id] = 'inactive_archived';
+
       });
       setNextStages(stages);
     }
@@ -100,6 +103,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
 
       // Update the local patient data
       const updatedPatient = await response.json();
+      window.location.reload();
       
       // Update patients list with the new patient data
       const updatedPatients = patients.map((p) =>

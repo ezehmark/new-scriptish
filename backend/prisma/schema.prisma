@@ -293,7 +293,9 @@ enum PipelineStage {
   AUTHORIZATION
   SCHEDULING
   TREATMENT
+  
   COMPLETE
+  FOLLOW_UP
   INACTIVE_ARCHIVED
 
   @@map("pipeline_stages")
