@@ -7,7 +7,7 @@ const {fetchAllPatients} = require('../services/patientService')
 
 const router = Router();
 
-router.gett('/:clinicId',authMiddleware, async(req,res)=>{
+router.get('/:clinicId',authMiddleware, async(req,res)=>{
     console.log('Fetching clinic related patients using clinic id:',req.params)
     try{
         const clinicId =req.params;
