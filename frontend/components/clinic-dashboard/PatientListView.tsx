@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import PatientDetailModal from '@/components/PatientDetailModal';
 import { useState } from 'react';
 
+
 interface Patient {
   id: string;
   firstName: string;

@@ -109,11 +109,7 @@ const navItems = [
     label: 'Referrals',
     icon: Users,
   },
-  {
-    id: 'partners' as ViewType,
-    label: 'Partners',
-    icon: Building2,
-  },
+ 
   {
     id: 'analytics' as ViewType,
     label: 'Analytics',
@@ -298,17 +294,18 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div
-          className={`fixed inset-y-0 left-0 z-40 w-64 bg-background backdrop-blur-md border-r border-border/30 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 shadow-md left-0 z-40 w-64 bg-primary/10 backdrop-blur-[20px] border-r border-border/30 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           {/* Logo */}
           <div className="p-6 border-b border-border/30">
-            <button onClick={() => setCurrentView('overview')} className="flex items-center gap-2">
-              <Building2 className="w-8 h-8 text-accent" />
+            <button 
+            onClick={() => setCurrentView('overview')} className="flex items-center p-2 px-3 -mx-2 rounded-lg w-full bg-primary/20 gap-2">
+              <Building2 className="w-8 h-8 text-white p-1 rounded-lg bg-primary" />
               <div>
-                <h2 className="font-bold text-foreground">Nexu Leads Hospital</h2>
-                <p className="text-xs text-foreground/50">NPI: {hospital.npiNumber}</p>
+                <h2 className="font-bold text-left text-primary">{hospital?.name}</h2>
+                <p className="text-xs text-primary/70">NPI: {hospital.npiNumber}</p>
               </div>
             </button>
           </div>
@@ -328,8 +325,8 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
 
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-primary/60 text-white border border-accent/50'
-                      : 'text-foreground/70 hover:bg-primary/30 hover:text-accent'
+                      ? 'bg-primary/50 text-white border border-primary/50'
+                      : 'text-foreground/70 hover:bg-primary/30 hover:text-primary'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -346,10 +343,9 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
               router.push('/login');
               localStorage.removeItem('hospital');
               localStorage.removeItem('hospitalAdmin');
-              
-            }}className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/30 hover:text-red-400 transition-all">
-              <LogOut className="w-5 h-5"
-               />
+            }}
+            className="flex items-center gap-3 cursor-pointer w-full px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/30 hover:text-red-400 transition-all">
+              <LogOut className="w-5 h-5" />
               <span className="font-medium">Logout</span>
             </button>
           </div>
@@ -372,9 +368,9 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
             className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
           >
             {isSidebarOpen ? (
-              <X className="w-6 h-6 text-accent" />
+              <X className="w-6 h-6 text-primary" />
             ) : (
-              <Menu className="w-6 h-6 text-accent" />
+              <Menu className="w-6 h-6 text-primary" />
             )}
           </button>
         </div>
