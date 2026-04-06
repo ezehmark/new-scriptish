@@ -261,7 +261,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
     
   }, [currentView]);
 
-  // Fetch all clinics
+  // Fetch all clinic
   useEffect(() => {
    
     const fetchClinics = async () => {
