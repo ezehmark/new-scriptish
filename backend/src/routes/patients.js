@@ -7,16 +7,19 @@ const {fetchAllPatients} = require('../services/patientService')
 
 const router = Router();
 
-router.get('/:clinicId',authMiddleware, async(req,res)=>{
-    console.log('Fetching clinic related patients using clinic id:',req.params)
+router.get('/',authMiddleware, async(req,res)=>{
+    console.log('Fetching clinic related patients using clinic id:',req.query)
     try{
-        const clinicId =req.params;
-
-    const result = await fetchAllPatients(clinicId);
-    res.json(result)
+        const clinicId = req.query.clinicId;
+        if (!clinicId) {
+            return res.status(400).json({ error: 'clinicId query parameter is required' });
+        }
+        const result = await fetchAllPatients(clinicId);
+        res.json(result)
     }
     catch(err){
-        console.log('Erro fetching patients:',err)
+        console.log('Error fetching patients:',err)
+        res.status(500).json({ error: err.message })
     }
 } )
 
