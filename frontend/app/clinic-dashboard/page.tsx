@@ -3,12 +3,28 @@
 import { useClinicDashboardView } from '@/components/ClinicDashboardLayout';
 import OverviewView from '@/components/clinic-dashboard/OverviewView';
 import PatientsView from '@/components/clinic-dashboard/PatientsView';
+import PatientListView from '@/components/clinic-dashboard/PatientListView';
 import SettingsView from '@/components/clinic-dashboard/SettingsView';
 
 export default function ClinicDashboardPage() {
   const { currentView, setCurrentView, patients, patientsError, patientsLoading} = useClinicDashboardView();
 
   // Render different views based on currentView state
+  if (currentView === 'dashboard') {
+    return <OverviewView onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'patientsList') {
+    return (
+      <PatientListView
+        patients={patients}
+        patientsError={patientsError}
+        patientsLoading={patientsLoading}
+        onBack={() => setCurrentView('dashboard')}
+      />
+    );
+  }
+
   if (currentView === 'patients') {
     return (
       <PatientsView

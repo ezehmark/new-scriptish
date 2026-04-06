@@ -24,140 +24,7 @@ const pipelineStages = [
 ];
 
 
-const mockAlerts = [
-  {
-    id: '1',
-    type: 'critical' as const,
-    title: 'Consent form unsigned — appointment is tomorrow',
-    description: 'Patient Sarah M. has not signed consent form for appointment scheduled tomorrow at 2:00 PM.',
-    action: 'Send SMS reminder',
-  },
-  {
-    id: '2',
-    type: 'critical' as const,
-    title: 'PA approval expiring in 14 days',
-    description: 'James K. has active PA approval that expires in 14 days. Patient has not yet been treated.',
-    action: 'Schedule appointment',
-  },
-  {
-    id: '3',
-    type: 'warning' as const,
-    title: 'Intake form incomplete',
-    description: 'Michael R. appointment is today but intake form is still incomplete.',
-    action: 'Complete intake',
-  },
-  {
-    id: '4',
-    type: 'warning' as const,
-    title: 'Follow-up calls overdue',
-    description: '3 patients require post-treatment follow-up check-in from yesterday.',
-    action: 'View patients',
-  },
-  {
-    id: '5',
-    type: 'info' as const,
-    title: 'Insurance verification failed',
-    description: 'Patient Emily T. insurance verification failed. Manual review required.',
-    action: 'Review case',
-  },
-];
 
-const mockPatients = {
-  'new-referral': [
-    {
-      name: 'Jennifer L.',
-      treatmentType: 'IV Therapy',
-      referringPhysician: 'Dr. Sarah Chen, MD',
-      insuranceStatus: 'pending' as const,
-      paStatus: 'pending' as const,
-      intakeStatus: 'pending' as const,
-      consentStatus: 'pending' as const,
-      nextAction: 'Verify Insurance',
-      assignedStaff: 'Unassigned',
-    },
-  ],
-  'verifying-ins': [
-    {
-      name: 'Marcus T.',
-      treatmentType: 'Ketamine Therapy',
-      referringPhysician: 'Dr. David Martinez, MD',
-      insuranceStatus: 'verified' as const,
-      paStatus: 'pending' as const,
-      intakeStatus: 'complete' as const,
-      consentStatus: 'signed' as const,
-      nextAction: 'Submit Prior Auth',
-      assignedStaff: 'Lisa R.',
-    },
-  ],
-  'pa-pending': [
-    {
-      name: 'Robert H.',
-      treatmentType: 'Biologic Infusion',
-      referringPhysician: 'Dr. Angela White, MD',
-      insuranceStatus: 'verified' as const,
-      paStatus: 'pending' as const,
-      intakeStatus: 'complete' as const,
-      consentStatus: 'signed' as const,
-      nextAction: 'Awaiting PA Decision',
-      assignedStaff: 'Michael J.',
-      appointmentDate: 'Pending PA approval',
-    },
-  ],
-  'scheduled': [
-    {
-      name: 'Sarah M.',
-      treatmentType: 'NAD+ Therapy',
-      referringPhysician: 'Dr. Elizabeth Brown, MD',
-      insuranceStatus: 'verified' as const,
-      paStatus: 'approved' as const,
-      intakeStatus: 'complete' as const,
-      consentStatus: 'pending' as const,
-      nextAction: 'Send Consent Form',
-      assignedStaff: 'Jessica P.',
-      appointmentDate: 'Mar 25, 2026 at 2:00 PM',
-    },
-    {
-      name: 'James K.',
-      treatmentType: 'IV Hydration',
-      referringPhysician: 'Dr. Thomas Green, MD',
-      insuranceStatus: 'verified' as const,
-      paStatus: 'approved' as const,
-      intakeStatus: 'complete' as const,
-      consentStatus: 'signed' as const,
-      nextAction: 'Confirm Appointment',
-      assignedStaff: 'Nicole L.',
-      appointmentDate: 'Mar 27, 2026 at 10:30 AM',
-    },
-  ],
-  'in-treatment': [
-    {
-      name: 'Daniel F.',
-      treatmentType: 'IV Therapy',
-      referringPhysician: 'Dr. Robert Clark, MD',
-      insuranceStatus: 'verified' as const,
-      paStatus: 'approved' as const,
-      intakeStatus: 'complete' as const,
-      consentStatus: 'signed' as const,
-      nextAction: 'Check-in Patient',
-      assignedStaff: 'Alex K.',
-      appointmentDate: 'Today - In Progress',
-    },
-  ],
-  'complete': [
-    {
-      name: 'Patricia V.',
-      treatmentType: 'Ketamine Therapy',
-      referringPhysician: 'Dr. Michelle Lee, MD',
-      insuranceStatus: 'verified' as const,
-      paStatus: 'approved' as const,
-      intakeStatus: 'complete' as const,
-      consentStatus: 'signed' as const,
-      nextAction: 'Schedule Follow-up',
-      assignedStaff: 'Chris D.',
-      appointmentDate: 'Completed Mar 24, 2026',
-    },
-  ],
-};
 
 interface OverviewViewProps {
   onBack?: () => void;
@@ -186,7 +53,7 @@ export default function OverviewView({ onBack }: OverviewViewProps) {
       <div className="border-b border-border/30 bg-primary/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-2">Quick Overview</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Clinic Dashboard</h1>
             <p className="text-foreground/75">Manage your clinic's patient referrals and appointments</p>
           </div>
         </div>
@@ -195,14 +62,11 @@ export default function OverviewView({ onBack }: OverviewViewProps) {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Alerts Section */}
-        <div className="mb-12 -mt-4 sm:mb-16">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-6">Urgent Actions</h2>
-          <AlertsSection alerts={mockAlerts} />
-        </div>
+       
 
         {/* Pipeline Stages */}
         <div className="mb-12 sm:mb-16">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-6">Patients Pipeline Overview</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-accent mb-6">Quick Overview</h2>
 
           {/* Stage Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
