@@ -4,6 +4,7 @@ import { useClinicDashboardView } from '@/components/ClinicDashboardLayout';
 import OverviewView from '@/components/clinic-dashboard/OverviewView';
 import PatientsView from '@/components/clinic-dashboard/PatientsView';
 import PatientListView from '@/components/clinic-dashboard/PatientListView';
+import PatientIntakeForm from '@/components/clinic-dashboard/PatientIntakeForm';
 import SettingsView from '@/components/clinic-dashboard/SettingsView';
 
 export default function ClinicDashboardPage() {
@@ -12,6 +13,14 @@ export default function ClinicDashboardPage() {
   // Render different views based on currentView state
   if (currentView === 'dashboard') {
     return <OverviewView onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'intakeForm') {
+    return (
+      <PatientIntakeForm
+        onBack={() => setCurrentView('patients')}
+      />
+    );
   }
 
   if (currentView === 'patientsList') {

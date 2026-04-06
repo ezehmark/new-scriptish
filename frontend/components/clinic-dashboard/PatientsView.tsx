@@ -131,7 +131,10 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                 {patientsLoading && <Loader className='h-5 w-5 animate-spin' />}
               </div>
             </div>
-            <Button className="bg-accent hover:bg-accent/90 text-white font-semibold gap-2 w-full sm:w-auto">
+            <Button 
+              onClick={() => setCurrentView('intakeForm')}
+              className="bg-accent hover:bg-accent/90 text-white font-semibold gap-2 w-full sm:w-auto"
+            >
               <Plus className="w-4 h-4" />
               Intake Form
             </Button>

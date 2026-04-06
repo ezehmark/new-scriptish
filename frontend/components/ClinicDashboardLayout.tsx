@@ -10,7 +10,7 @@ interface ClinicDashboardLayoutProps {
   children: React.ReactNode;
 }
 
-type ViewType = 'dashboard' | 'patientsList' | 'patients' | 'archives' | 'settings';
+type ViewType = 'dashboard' | 'patientsList' | 'patients' | 'archives' | 'settings' | 'intakeForm';
 
 interface Patient {
   // Core Patient Info
