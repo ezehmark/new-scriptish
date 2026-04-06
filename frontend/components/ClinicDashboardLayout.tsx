@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { Building2, Users, Settings, LogOut, Menu, X, Archive } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { authService } from '@/lib/authService';
@@ -10,7 +10,7 @@ interface ClinicDashboardLayoutProps {
   children: React.ReactNode;
 }
 
-type ViewType = 'overview' | 'patients' | 'settings';
+type ViewType = 'overview' | 'patients' | 'archives' | 'settings';
 
 interface Patient {
   // Core Patient Info
@@ -79,6 +79,7 @@ interface DashboardContextType {
   patients: Patient[];
   patientsLoading: boolean;
   patientsError: string | null;
+  clinic: any | null;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -103,6 +104,11 @@ const navItems = [
     icon: Users,
   },
   {
+    id: 'archives' as ViewType,
+    label: 'Archives',
+    icon: Archive,
+  },
+  {
     id: 'settings' as ViewType,
     label: 'Settings',
     icon: Settings,
@@ -117,7 +123,19 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
   // const[clinic,setClinic]
   const [patientsError, setPatientsError] = useState<string | null>(null);
   const router = useRouter();
-const[clinic,setClinic]=useState<object | null>(null)
+  const [clinic, setClinic] = useState<any | null>(null);
+  
+  // Restore dashboard view from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedView = localStorage.getItem('dashboardView') as ViewType | null;
+      if (savedView && ['overview', 'patients', 'archives', 'settings'].includes(savedView)) {
+        setCurrentView(savedView);
+        localStorage.removeItem('dashboardView'); // Clear after using
+      }
+    }
+  }, []);
+  
   // Fetch patients referred to this clinic
   useEffect(() => {
     const fetchReferredPatients = async () => {

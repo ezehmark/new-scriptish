@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { X, CheckCircle, Clock, AlertCircle, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Patient {
@@ -30,7 +30,12 @@ const pipelineStages = [
   { id: 'authorization', label: 'Prior Authorization', detail: 'Prior Authorization' },
   { id: 'scheduling', label: 'Scheduling Treatment', detail: 'Scheduling Treatment' },
   { id: 'treatment', label: 'Treatment In Process', detail: 'Treatment In Process' },
-  { id: 'followup', label: 'Treatment Follow-ups', detail: 'Treatment Follow-ups' },
+  { id: 'complete', label: 'Treatment In Process', detail: 'Treatment In Completed' },
+
+  { id: 'follow_up', label: 'Treatment Follow-ups', detail: 'Follow-ups' },
+  
+  { id: 'inactive_archived', label: 'Archived Patient', detail: 'INACTIVE_ARCHIVED' },
+  
 ];
 
 const getStageStatus = (stageId: string, patientPipelineStage: string) => {
@@ -82,22 +87,35 @@ const getStatusIcon = (status: string) => {
 
 export default function PatientDetailModal({ patient, onClose, onUpdateStatus }: PatientCRMNodeProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleUpdateStatus = async () => {
-    if (!onUpdateStatus || !patient.id) return;
-    
-    const nextStage = getNextStage(patient.pipelineStage);
-    if (!nextStage) return; // Already at final stage
-    
+  const nextStage = getNextStage(patient.pipelineStage);
+  const nextStageLabel =
+    pipelineStages.find((stage) => stage.id === nextStage?.toLowerCase())?.label ??
+    nextStage?.replace(/_/g, ' ').toLowerCase() ??
+    '';
+
+  const handleUpdateStatus = () => {
+    if (!nextStage) return;
+    setShowConfirm(true);
+  };
+
+  const handleConfirmUpdateStatus = async () => {
+    if (!onUpdateStatus || !patient.id || !nextStage) return;
+
     try {
       setIsUpdating(true);
-      // console.log('Selected referral id:',patient._referral.id)
       await onUpdateStatus(patient.id, nextStage);
+      setShowConfirm(false);
       onClose();
     } catch (error) {
       console.error('Failed to update status:', error);
       setIsUpdating(false);
     }
+  };
+
+  const handleCancelUpdate = () => {
+    setShowConfirm(false);
   };
 
   return (
@@ -143,7 +161,7 @@ export default function PatientDetailModal({ patient, onClose, onUpdateStatus }:
             
 
             <div>
-              <label className="text-sm font-semibold text-primary/80">Current Status</label>
+              <label className={`${patient.pipelineStage==='INACTIVE_ARCHIVED'?'text-orange-600':'text-sm text-primary/80'} font-semibold `}>Current Status</label>
               <p className="text-accent mt-1 font-semibold capitalize">{patient.pipelineStage?.replace(/_/g, ' ').toLowerCase()}</p>
             </div>
           </div>
@@ -259,12 +277,50 @@ export default function PatientDetailModal({ patient, onClose, onUpdateStatus }:
           </Button>
           <Button 
             onClick={handleUpdateStatus}
-            disabled={isUpdating || !getNextStage(patient.pipelineStage)}
-            className="bg-accent hover:bg-accent/90 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUpdating ? 'Updating...' : 'Update Status'}
+            disabled={isUpdating || patient.pipelineStage=='INACTIVE_ARCHIVED'}
+            className={`${nextStage=='INACTIVE_ARCHIVED'?'bg-orange-500/30 text-orange-600':'bg-accent text-white'} hover:bg-gray-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed`}
+          >{nextStage==='INACTIVE_ARCHIVED'&&<Archive className='text-background text-orange-500 mr-1'/>}
+            {isUpdating ? 'Updating...' : nextStage?.toLocaleLowerCase()==='inactive_archived'? 'Archive Patient':'Update Status'}
           </Button>
         </div>
+
+        {showConfirm && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 p-4">
+            <div
+              className="w-full max-w-lg rounded-3xl border border-border/30 bg-background p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-semibold text-foreground mb-3">
+                Confirm status update
+              </h3>
+              <p className="text-sm text-foreground/70 mb-6">
+                Are you sure you want to update this patient's status from{' '}
+                <span className="font-semibold">
+                  {patient.pipelineStage?.replace(/_/g, ' ').toLowerCase()}
+                </span>{' '}
+                to{' '}
+                <span className="font-semibold">{nextStageLabel}</span>?
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleCancelUpdate}
+                  className="border-border/30 text-foreground hover:bg-primary/20"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleConfirmUpdateStatus}
+                  disabled={isUpdating}
+                  className={`${nextStage==='INACTIVE_ARCHIVED'?'bg-orange-700/20 text-orange-600':'bg-accent text-white'} hover:bg-gray-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {isUpdating ? 'Updating...' : !isUpdating&&nextStage==='INACTIVE_ARCHIVED' ?'Yes, Archive':'Yes, update status'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         </div>
 
       

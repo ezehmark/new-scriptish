@@ -10,11 +10,26 @@ export default function ClinicDashboardPage() {
 
   // Render different views based on currentView state
   if (currentView === 'patients') {
-    return <PatientsView
-    patients={patients}
-    patientsError={patientsError}
-    patientsLoading={patientsLoading}
-     onBack={() => setCurrentView('overview')} />;
+    return (
+      <PatientsView
+        patients={patients}
+        patientsError={patientsError}
+        patientsLoading={patientsLoading}
+        onBack={() => setCurrentView('overview')}
+      />
+    );
+  }
+
+  if (currentView === 'archives') {
+    return (
+      <PatientsView
+        patients={patients}
+        patientsError={patientsError}
+        patientsLoading={patientsLoading}
+        archivedOnly
+        onBack={() => setCurrentView('overview')}
+      />
+    );
   }
 
   if (currentView === 'settings') {

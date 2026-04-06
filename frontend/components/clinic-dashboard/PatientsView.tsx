@@ -5,40 +5,17 @@ import { Users, ArrowLeft, Plus, ZoomIn, Expand, LucideExpand, Maximize, Loader,
 import { Button } from '@/components/ui/button';
 import PatientDetailModal from '@/components/PatientDetailModal';
 import { fetchWithAuth } from '@/lib/fetchWithAuth';
+import { useClinicDashboardView } from '../ClinicDashboardLayout';
 
 interface PatientsViewProps {
-  patients:any[];
-  patientsError:string;
-  patientsLoading:boolean;
+  patients: any[];
+  patientsError: string | null;
+  patientsLoading: boolean;
+  archivedOnly?: boolean;
   onBack?: () => void;
 }
 
-const mockPatients = [
-  {
-    id: '1',
-    firstName: 'Jennifer',
-    lastName: 'L.',
-    prescribedTreatment: 'IV Therapy',
-    referringPhysician: 'Dr. Sarah Chen, MD',
-    pipelineStage: 'SCHEDULING',
-  },
-  {
-    id: '2',
-    firstName: 'Marcus',
-    lastName: 'T.',
-    prescribedTreatment: 'Ketamine Therapy',
-    referringPhysician: 'Dr. David Martinez, MD',
-    pipelineStage: 'TREATMENT',
-  },
-  {
-    id: '3',
-    firstName: 'Robert',
-    lastName: 'H.',
-    prescribedTreatment: 'Biologic Infusion',
-    referringPhysician: 'Dr. Angela White, MD',
-    pipelineStage: 'AUTHORIZATION',
-  },
-];
+
 
 const pipelineStages = [
   { id: 'new_referral', detail: 'New Referral',label:'New Referral' },
@@ -46,14 +23,16 @@ const pipelineStages = [
   { id: 'authorization', detail: 'Prior Authorization', label:'Authorization' },
   { id: 'scheduling', detail: 'Scheduling Treatment',label:'Scheduling' },
   { id: 'treatment', detail: 'Treatment In Process',label:'Treatment' },
-  { id: 'followup', detail: 'Treatment Follow-ups', label:'Follow-up' },
+  { id: 'complete', detail: 'Treatment Is Completed',label:'Completed' },
+  { id: 'follow_up', detail: 'Treatment Follow-ups', label:'Follow-up' },
+  { id: 'inactive_archived', label: 'Patient Archived', detail: 'INACTIVE_ARCHIVED' }
 ];
 
 
 
-function getStageStatus(stageId: string, patientStatus: string) {
+function getStageStatus(stageId: string, currentPipelineStage: string) {
   const order = pipelineStages.map(s => s.id);
-  const currentIdx = order.indexOf((patientStatus || '').toLowerCase());
+  const currentIdx = order.indexOf((currentPipelineStage || '').toLowerCase());
   const stageIdx = order.indexOf(stageId);
   if (stageIdx < currentIdx) return 'completed';
   if (stageIdx === currentIdx) return 'active';
@@ -62,11 +41,22 @@ function getStageStatus(stageId: string, patientStatus: string) {
 
 
 
-export default function PatientsView({ onBack, patientsLoading, patientsError, patients }: PatientsViewProps) {
-  const [selectedPatient, setSelectedPatient] = useState<typeof mockPatients[0] | null>(null);
+export default function PatientsView({ onBack, patientsLoading, patientsError, patients, archivedOnly }: PatientsViewProps) {
+  const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
   const [nextStages, setNextStages] = useState<Record<string, string>>({});
   const [hoveredStage, setHoveredStage] = useState<string | null>(null);
-  const[isHovering,setIsHovering]=useState<boolean | false>(false)
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const {setCurrentView} = useClinicDashboardView();
+
+  const activePatients = patients.filter(
+    (patient) => !['INACTIVE_ARCHIVED', 'inactive_archived'].includes(patient.pipelineStage)
+  );
+  const archivedPatients = patients.filter((patient) =>
+    ['INACTIVE_ARCHIVED', 'inactive_archived'].includes(patient.pipelineStage)
+  );
+  const displayedPatients = archivedOnly ? archivedPatients : activePatients;
+  const pageTitle = archivedOnly ? 'Archived Patients' : 'Patient List';
+  const archiveBoxTitle = 'Archived Patients';
 
   useEffect(() => {
     if (patients.length > 0) {
@@ -82,6 +72,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
         else if (currentStage === 'TREATMENT') stages[patient.id] = 'complete';
         else if (currentStage==='COMPLETE') stages[patient.id] = 'follow_up';
          else if (currentStage==='FOLLOW_UP') stages[patient.id] = 'inactive_archived';
+         
 
       });
       setNextStages(stages);
@@ -133,9 +124,11 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                 </button>
               )}
               <div>
-                <h1 className="text-3xl font-bold text-accent">Patients</h1>
-                <p className="text-foreground/75">Manage and track all patients</p>
-                {patientsLoading&&<Loader className='h-5 w-5 animate-spin'/>}
+                <h1 className="text-3xl font-bold text-accent">{pageTitle}</h1>
+                <p className="text-foreground/75">
+                  {archivedOnly ? 'Review archived patients' : 'Manage and track all patients'}
+                </p>
+                {patientsLoading && <Loader className='h-5 w-5 animate-spin' />}
               </div>
             </div>
             <Button className="bg-accent hover:bg-accent/90 text-white font-semibold gap-2 w-full sm:w-auto">
@@ -158,9 +151,16 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
               </div>
 
               <div className="space-y-3">
-                {patients.length>0&& patients.map((patient) => (
-                  <div key={patient.id} className="bg-background/60 overflow-hidden border border-border/20 rounded-lg p-2 cursor-pointer px-4 hover:bg-background/60 relative  transition-colors"
-                   onClick={() => {setSelectedPatient(patient);console.log('Selected Patient:',patient)}}>
+                {displayedPatients.length > 0 ? (
+                  displayedPatients.map((patient) => (
+                    <div
+                      key={patient.id}
+                      className="bg-background/60 -mx-4 overflow-hidden border border-border/20 rounded-lg p-2 cursor-pointer px-4 hover:bg-background/60 relative transition-colors"
+                      onClick={() => {
+                        setSelectedPatient(patient);
+                        console.log('Selected Patient:', patient);
+                      }}
+                    >
                     <Fullscreen className='absolute h-4 w-4 text-accent/80 right-4 top-4'/>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex-1">
@@ -175,12 +175,14 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                             const nextStage = nextStages[patient.id];
 
                             return (
-                             
+                             stage.id !=='inactive_archived'&&
                               <div key={stage.id} className="flex self-end relative">
                                 <div
                                   className="relative"
-                                  onMouseEnter={() => {setHoveredStage(stage.id);setIsHovering(true)}}
-                                  onMouseLeave={() => {setHoveredStage(null);setIsHovering(false)}}
+                                     onMouseEnter={() => setHoveredStage(stage.id)}
+                                  onMouseLeave={() => setHoveredStage(null)}
+                                
+                                 
                                 >
                                   <div
                                     className={`${
@@ -194,7 +196,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                                     } rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap flex items-center justify-center transition-colors`}
                                   >{status=='completed'&&
                                    <CheckCircle2 className='h-4 mr-2 w-4 text-white'/>}
-                                   {status=='active'&&<div className='h-3 w-3 border-gray-100/30  rounded-full mr-2 border-l-gray-100 border-[2px] flex items-center animate-spin'/>}
+                                   {status=='active' && stage.id!=='complete'&&<div className='h-3 w-3 border-gray-100/30  rounded-full mr-2 border-l-gray-100 border-[2px] flex items-center animate-spin'/>}
                                    
                                     <span className={`${stage.id==nextStage&&'text-gray-600'}`}>{stage.label}</span>
                                   </div>
@@ -209,7 +211,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                                     </div>
                                   </div>
                                 )}
-                                {idx < pipelineStages.length - 1 && (
+                                {idx <pipelineStages.length -2 && (
                                   <div className="w-4 h-0.5 bg-border/80 self-center mx-1" />
                                 )}
                               </div>
@@ -220,8 +222,8 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                         <p className="text-foreground/60 text-sm mt-1">Referring Physician: {patient.referringPhysician}</p>
                       </div>
                       <RefreshCcwIcon
-                      onClick={(e)=>e.stopPropagation()} 
-                      className='h-4 w-4 text-primary absolute top-4 right-32'/>
+                      onClick={(e)=>{e.stopPropagation();localStorage.setItem('dashboardView','patients');window.location.reload();}} 
+                      className='h-4 w-4 text-primary absolute top-4 right-32 cursor-pointer hover:text-accent transition-colors'/>
                       <div className="flex items-center gap-3">
                         <span className={`px-3 py-1 absolute top-3 right-2 rounded-full mr-8 text-xs font-semibold border whitespace-nowrap ${
                           patient.urgencyLevel === 'ROUTINE' 
@@ -236,10 +238,47 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                       </div>
                     </div>
                   </div>
-                ))}
+                ))
+              ) : (
+                <div className="rounded-2xl border border-border/20 bg-primary/5 p-6 text-center text-foreground/70">
+                  {archivedOnly
+                    ? 'No archived patients yet.'
+                    : 'No active patients available right now.'}
+                </div>
+              )}
               </div>
             </div>
           </div>
+
+          {!archivedOnly && archivedPatients.length > 0 && (
+            <div className="bg-primary/10 border border-border/30 rounded-2xl overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <Users className="w-5 h-5 text-primary" />
+                  <h2 className="text-lg font-bold text-primary">{archiveBoxTitle}</h2>
+                </div>
+                <div className="space-y-3">
+                  {archivedPatients.map((patient) => (
+                    <div
+                      key={patient.id}
+                      className="bg-background/60 overflow-hidden border border-border/20 rounded-lg p-2 cursor-pointer px-4 hover:bg-background/60 relative transition-colors"
+                      onClick={() => setSelectedPatient(patient)}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-primary/95 font-semibold">{patient.firstName + ' ' + patient.lastName}</p>
+                          <p className="text-foreground/75 text-sm font-bold mt-1">{patient.prescribedTreatment}</p>
+                        </div>
+                        <span className="text-xs font-semibold uppercase tracking-[0.08em] text-foreground/70">
+                          {patient.pipelineStage?.replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

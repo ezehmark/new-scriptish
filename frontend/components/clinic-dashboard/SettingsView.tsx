@@ -6,7 +6,6 @@ import { useClinicDashboardView } from '../ClinicDashboardLayout';
 
 interface SettingsViewProps {
   onBack?: () => void;
-  clinic:object
 }
 
 
