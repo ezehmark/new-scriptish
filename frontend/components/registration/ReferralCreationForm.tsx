@@ -15,7 +15,7 @@ import {
 import { useDashboardView } from '../HospitalDashboardLayout';
 import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
-const API_BASE_URL = 'https://scriptishrxnewmark.onrender.com/v1';
+
 
 const URGENCY_LEVELS = [
   { id: 'ROUTINE', label: 'Routine' },
@@ -90,7 +90,8 @@ export default function ReferralCreationPage({
   onBack,
 }: ReferralCreationPageProps) {
 
- const{hospitalId}=useDashboardView();
+ const{hospitalId, clinics}=useDashboardView();
+ const API_BASE_URL = 'https://scriptishrxnewmark.onrender.com/v1';
  
   const [formData, setFormData] = useState<ReferralFormData>({
     patientFirstName: '',
@@ -186,20 +187,14 @@ export default function ReferralCreationPage({
     try {
       // Fetch clinic details
       console.log('📡 [Stage 2] Fetching clinic details from:', `${API_BASE_URL}/clinics/${clinicId}`);
-      const clinicResponse = await fetchWithAuth(`${API_BASE_URL}/clinics/${clinicId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      
+      const selectedClinic = clinics.find(clinic=>clinic.id==clinicId);
+      console.log('Selected clinic:',selectedClinic);
 
-      if (!clinicResponse.ok) {
-        console.error('❌ [Stage 2] Failed to fetch clinic details:', clinicResponse.statusText);
-        throw new Error('Failed to fetch clinic details');
-      }
+      
+      
 
-      const clinicData = await clinicResponse.json();
-      console.log('✅ [Stage 2] Clinic data fetched successfully:', clinicData);
+      console.log('✅ [Stage 2] Clinic data hydrated successfully');
 
       // Fetch patients linked to this clinic
       console.log('📡 [Stage 3] Fetching patients for clinic:', clinicId);
@@ -232,7 +227,7 @@ export default function ReferralCreationPage({
       );
 
       const activeCount = activePatients.length;
-      const chairCount = clinicData.infusionChairCount || 0;
+      const chairCount = selectedClinic.infusionChairCount || 0;
 
       console.log('✅ [Stage 5] Filter complete:');
       console.log(`   - Active patients: ${activeCount}`);
@@ -259,7 +254,7 @@ export default function ReferralCreationPage({
       }));
 
       setSelectedClinicData({
-        name: clinicData.name,
+        name: selectedClinic.name,
         infusionChairCount: chairCount,
         activePatients: activeCount,
       });
