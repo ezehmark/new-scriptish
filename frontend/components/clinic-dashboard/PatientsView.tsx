@@ -222,7 +222,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
                             );
                           })}
                         </div>
-                        <p className="text-foreground/60 text-sm mt-1">Referring Physician: {patient.referringPhysician}</p>
+                        <p className="text-foreground/60 text-sm mt-1">Referring Physician:<span className='font-semibold text-primary/70'> {patient.referringPhysician}</span></p>
                       </div>
                       <RefreshCcwIcon
                       onClick={(e)=>{e.stopPropagation();localStorage.setItem('dashboardView','patients');window.location.reload();}} 

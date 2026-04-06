@@ -111,7 +111,9 @@ export default function OverviewView({ onBack }: OverviewViewProps) {
 
           {/* Patient Cards Grid */}
           {currentPatients.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div 
+            onClick={()=>setCurrentView('patients')}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-4 cursor-pointer  sm:gap-6">
               {currentPatients.map((patient, index) => (
                 <PatientCard 
                   key={index} 
