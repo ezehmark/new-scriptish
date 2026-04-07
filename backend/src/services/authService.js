@@ -63,6 +63,16 @@ const registerClinic = async (input) => {
     },
   });
 
+  const subscription = await prisma.subscription.create({
+    data:{
+      clinicId:clinic.id,
+      plan:'FREE',
+
+    }
+  });
+
+  console.log('Subscription created successfully:',subscription)
+
   // Create admin user if provided
   let user = null;
   if (input.admin) {
@@ -402,6 +412,13 @@ const registerHospital = async (input) => {
       status: 'REGISTERED',
     },
   });
+
+  const subscription = await prisma.subscription.create({
+    data:{
+      hospitalId:hospital.id,
+      plan:'FREE'
+    }
+  })
 
   // Create admin user for authentication
   let user = null;

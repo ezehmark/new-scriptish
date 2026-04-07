@@ -30,198 +30,76 @@ export default function AIConciergeComingSoon({ featureName, onBack }: AIConcier
   return (
     <div
       ref={containerRef}
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0a0a0f',
-        fontFamily: "'Georgia', 'Times New Roman', serif",
-        overflow: 'hidden',
-        position: 'relative',
-      }}
+      className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden"
     >
       {/* Subtle grid background */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(80deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-          pointerEvents: 'none',
-        }}
-      />
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage:
+          'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(80deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '60px 60px',
+      }} />
 
       {/* Glowing orb */}
       <div
+        className="absolute w-[500px] h-[500px] rounded-full pointer-events-none"
         style={{
-          position: 'absolute',
-          width: '500px',
-          height: '500px',
-          borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, transparent 70%)',
+            'radial-gradient(circle, var(--primary-rgba) 0%, transparent 70%)',
           top: mousePos.y,
           left: mousePos.x,
           transform: 'translate(-50%, -50%)',
-          pointerEvents: 'none',
           transition: 'top 0.1s ease-out, left 0.1s ease-out',
-        }}
+          '--primary-rgba': 'rgba(102, 136, 255, 0.25)',
+        } as React.CSSProperties}
       />
 
       {/* Back Button - Top Left */}
       <button
         onClick={onBack}
-        style={{
-          position: 'absolute',
-          top: '24px',
-          left: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 16px',
-          background: 'rgba(168, 85, 247, 0.1)',
-          border: '1px solid rgba(168, 85, 247, 0.2)',
-          borderRadius: '8px',
-          color: '#c084fc',
-          cursor: 'pointer',
-          fontSize: '14px',
-          transition: 'all 0.3s ease',
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168, 85, 247, 0.2)';
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(168, 85, 247, 0.4)';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(168, 85, 247, 0.1)';
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(168, 85, 247, 0.2)';
-        }}
+        className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 rounded-lg text-primary hover:bg-primary/20 hover:border-primary/50 transition-all"
       >
         <ArrowLeft size={16} />
         Back
       </button>
 
-      <div
-        style={{
-          position: 'relative',
-          textAlign: 'center',
-          maxWidth: '480px',
-          padding: '0 24px',
-        }}
-      >
+      <div className="relative text-center max-w-[480px] px-6">
         {/* Animated icon */}
-        <div
-          style={{
-            width: '72px',
-            height: '72px',
-            margin: '0 auto 32px',
-            border: '1.5px solid rgba(168, 85, 247, 0.5)',
-            borderRadius: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(168, 85, 247, 0.08)',
-            animation: 'pulse 3s ease-in-out infinite',
-          }}
-        >
-          <Zap size={32} style={{ color: 'rgba(192, 132, 252, 0.9)' }} />
+        <div className="w-[72px] h-[72px] mx-auto mb-8 border border-primary/50 rounded-2xl flex items-center justify-center bg-primary/10 animate-pulse">
+          <Zap size={32} className="text-primary" />
         </div>
 
         {/* Status pill */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'rgba(168, 85, 247, 0.1)',
-            border: '1px solid rgba(168, 85, 247, 0.25)',
-            borderRadius: '100px',
-            padding: '6px 16px',
-            marginBottom: '28px',
-          }}
-        >
+        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/25 rounded-full px-4 py-1.5 mb-7">
           <span
-            style={{
-              width: '7px',
-              height: '7px',
-              borderRadius: '50%',
-              background: '#a855f7',
-              display: 'inline-block',
-              animation: 'blink 1.4s ease-in-out infinite',
-            }}
+            className="w-[7px] h-[7px] rounded-full bg-primary animate-pulse"
           />
-          <span
-            style={{
-              fontSize: '12px',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: '#c084fc',
-              fontFamily: "'Courier New', monospace",
-            }}
-          >
+          <span className="text-xs tracking-widest uppercase text-primary font-medium">
             Coming Soon
           </span>
         </div>
 
         {/* Headline */}
-        <h1
-          style={{
-            fontSize: 'clamp(2rem, 5vw, 2.75rem)',
-            fontWeight: '400',
-            color: '#f8fafc',
-            lineHeight: '1.2',
-            marginBottom: '16px',
-            letterSpacing: '-0.02em',
-          }}
-        >
+        <h1 className="text-4xl font-medium text-foreground mb-4 leading-tight">
           {featureName}
           <br />
-          <span
-            style={{
-              color: 'transparent',
-              backgroundImage:
-                'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-            }}
-          >
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             AI Features
           </span>
         </h1>
 
         {/* Subtext */}
-        <p
-          style={{
-            color: 'rgba(148,163,184,0.75)',
-            fontSize: '15px',
-            lineHeight: '1.7',
-            marginBottom: '40px',
-            fontFamily: "'Georgia', serif",
-          }}
-        >
+        <p className="text-foreground/70 text-base leading-relaxed mb-10">
           Advanced AI-powered features are coming soon. We're building powerful tools to help you deliver better patient care.
         </p>
 
         {/* Divider */}
-        <div
-          style={{
-            width: '40px',
-            height: '1px',
-            background: 'rgba(168, 85, 247, 0.4)',
-            margin: '0 auto',
-          }}
-        />
+        <div className="h-px w-10 bg-primary/40 mx-auto" />
       </div>
 
       <style>{`
         @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.0); }
-          50% { box-shadow: 0 0 24px 4px rgba(168, 85, 247, 0.18); }
-        }
-        @keyframes blink {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
+          50% { opacity: 0.5; }
         }
       `}</style>
     </div>

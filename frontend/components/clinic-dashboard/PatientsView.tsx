@@ -149,8 +149,10 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
           <div className="bg-primary/10 border border-border/30 rounded-2xl overflow-hidden">
             <div className="p-6">
               <div className="flex items-center gap-2 mb-6">
+
                 <Users className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-bold text-primary">Active Patients </h2>
+
+                <h2 className="text-lg font-bold text-primary">Active Patients</h2>
               </div>
 
               <div className="space-y-3">

@@ -119,6 +119,7 @@ model Clinic {
   voiceAgent            VoiceAgent?
   knowledgeBase         KnowledgeBase?
   callLogs              CallLog[]
+  subscription          Subscription?
 
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
@@ -188,6 +189,7 @@ model Hospital {
   // Relationships
   staff                 User[] @relation("HospitalStaff")
   referralPhysicians    ReferralPhysicianHospital[]
+  subscription          Subscription?
 
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
@@ -301,6 +303,61 @@ enum PipelineStage {
   @@map("pipeline_stages")
 }
 
+enum SubscriptionType {
+  FREE
+  PLUS
+  MAX
+
+  @@map("subscription_types")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  EXPIRED
+
+  @@map("subscription_statuses")
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+
+  @@map("billing_cycles")
+}
+
+model Subscription {
+  id            String    @id @default(cuid())
+  
+  // Clinic subscription
+  clinic        Clinic?   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId      String?   @unique @map("clinic_id")
+  
+  // Hospital subscription
+  hospital      Hospital? @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  hospitalId    String?   @unique @map("hospital_id")
+  
+  // Plan details
+  plan          SubscriptionType @map("plan")
+  
+  // Billing/Status
+  status        SubscriptionStatus @default(ACTIVE)
+  billingCycle  BillingCycle @default(MONTHLY) @map("billing_cycle")
+  
+  // Dates
+  startDate     DateTime  @default(now()) @map("start_date")
+  renewalDate   DateTime  @map("renewal_date")
+  cancelledAt   DateTime? @map("cancelled_at")
+  
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([clinicId])
+  @@index([hospitalId])
+  @@map("subscriptions")
+}
 
 model WaitList {
   id        String   @id @default(cuid())
