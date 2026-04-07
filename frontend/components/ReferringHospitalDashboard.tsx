@@ -27,6 +27,8 @@ import {
 import ReferralsView from '@/components/hospital-dashboard/ReferralsView';
 import AnalyticsView from '@/components/hospital-dashboard/AnalyticsView';
 import PartnersView from '@/components/hospital-dashboard/PartnersView';
+import ClinicsView from '@/components/hospital-dashboard/ClinicsView';
+import LiveAnalytics from '@/components/hospital-dashboard/LiveAnalytics';
 import { useDashboardView } from '@/components/HospitalDashboardLayout';
 import PatientsView from './clinic-dashboard/PatientsView';
 import dayjs from 'dayjs'
@@ -152,8 +154,12 @@ export default function ReferringHospitalDashboard() {
     return <ReferralsView onBack={() => setCurrentView('overview')} />;
   }
 
+  if (currentView === 'clinics') {
+    return <ClinicsView />;
+  }
+
   if (currentView === 'analytics') {
-    return <AnalyticsView onBack={() => setCurrentView('overview')} />;
+    return <LiveAnalytics />;
   }
 
   if (currentView === 'partners') {
@@ -168,18 +174,12 @@ export default function ReferringHospitalDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-2">
-                Referral Dashboard
+                Hospital Dashboard
               </h1>
               <p className="text-foreground/75">
                 Manage and track your referrals across partner clinics
               </p>
             </div>
-            <Button 
-              onClick={() => setCurrentView('referrals')}
-              className="bg-primary shadow-sm hover:bg-primary/90 text-white font-semibold gap-2 w-full sm:w-auto">
-              <Plus className="w-4 h-4" />
-              New Referral
-            </Button>
           </div>
         </div>
       </div>
@@ -353,7 +353,7 @@ export default function ReferringHospitalDashboard() {
                                style={{msScrollbarHighlightColor:'green',scrollbarWidth:'none'}}>
                                 
                               {clinic.treatmentTypesOffered?.length>0&&
-                              clinic.treatmentTypesOffered.map((treatment)=>
+                              clinic.treatmentTypesOffered.map((treatment: string)=>
                               <button key={treatment} 
                               className="text-xs text-accent whitespace-nowrap rounded-lg shadow-sm bg-accent/10 p-2 px-3 font-medium">
                               {treatment.replace('_',' ')}

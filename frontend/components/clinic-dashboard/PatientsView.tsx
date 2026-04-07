@@ -55,7 +55,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
     ['INACTIVE_ARCHIVED', 'inactive_archived'].includes(patient.pipelineStage)
   );
   const displayedPatients = archivedOnly ? archivedPatients : activePatients;
-  const pageTitle = archivedOnly ? 'Archived Patients' : 'Patient List';
+  const pageTitle = archivedOnly ? 'Archived Patients' : 'Patient Pipelines';
   const archiveBoxTitle = 'Archived Patients';
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
               <div>
                 <h1 className="text-3xl font-bold text-accent">{pageTitle}</h1>
                 <p className="text-foreground/75">
-                  {archivedOnly ? 'Review archived patients' : 'Manage and track all patients'}
+                  {archivedOnly ? 'Review archived patients' : 'Manage and track all pipeline stages'}
                 </p>
                 {patientsLoading && <Loader className='h-5 w-5 animate-spin' />}
               </div>
@@ -150,7 +150,7 @@ export default function PatientsView({ onBack, patientsLoading, patientsError, p
             <div className="p-6">
               <div className="flex items-center gap-2 mb-6">
                 <Users className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-bold text-primary">Patient List</h2>
+                <h2 className="text-lg font-bold text-primary">Active Patients </h2>
               </div>
 
               <div className="space-y-3">

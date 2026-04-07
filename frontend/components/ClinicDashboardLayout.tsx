@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Users, MenuIcon, MenuSquare, Settings, LogOut, Menu, X, Archive, LayoutDashboard, Workflow, BarChart3 } from 'lucide-react';
+import { Building2, Users, MenuIcon, MenuSquare, Settings, LogOut, Menu, X, Archive, LayoutDashboard, Workflow, BarChart3, Zap, Mic, Database, MessageSquare, CreditCard, BrainCircuit, Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState, createContext, useContext, useEffect } from 'react';
 import { authService } from '@/lib/authService';
@@ -10,7 +10,7 @@ interface ClinicDashboardLayoutProps {
   children: React.ReactNode;
 }
 
-type ViewType = 'dashboard' | 'patientsList' | 'patients' | 'archives' | 'settings' | 'intakeForm' | 'analytics';
+type ViewType = 'dashboard' | 'patientsList' | 'patients' | 'archives' | 'settings' | 'intakeForm' | 'analytics' | 'voiceAgents' | 'knowledgeBase' | 'automatedSMS' | 'subscriptions' | 'logout';
 
 interface Patient {
   // Core Patient Info
@@ -130,6 +130,41 @@ const navItems = [
         id: 'settings' as ViewType,
         label: 'Settings',
         icon: Settings,
+      },
+    ],
+  },
+  {
+    group: 'AI CONCIERGE',
+    items: [
+      {
+        id: 'voiceAgents' as ViewType,
+        label: 'Voice Agents',
+        icon: Bot,
+      },
+      {
+        id: 'knowledgeBase' as ViewType,
+        label: 'Knowledge Base',
+        icon: BrainCircuit,
+      },
+      {
+        id: 'automatedSMS' as ViewType,
+        label: 'Automated SMS',
+        icon: MessageSquare,
+      },
+    ],
+  },
+  {
+    group: 'SETTINGS',
+    items: [
+      {
+        id: 'subscriptions' as ViewType,
+        label: 'Subscriptions',
+        icon: CreditCard,
+      },
+      {
+        id: 'logout' as ViewType,
+        label: 'Logout',
+        icon: LogOut,
       },
     ],
   },
@@ -272,7 +307,7 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
       <div className="flex h-screen bg-background">
         {/* Sidebar */}
         <div
-          className={`fixed inset-y-0 shadow-md left-0 z-40 w-64 bg-background/90 backdrop-blur-[20px] border-r border-border/30 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 shadow-md overflow-hidden overflow-y-auto left-0 z-40 w-64 bg-background/90 backdrop-blur-[20px] border-r border-border/30 transform transition-transform duration-300 lg:static lg:translate-x-0 ${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -306,7 +341,7 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
                           setCurrentView(item.id);
                           setIsSidebarOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                        className={`w-full flex items-center gap-3 ${item.id=='logout'&&'bg-red-500/20 text-red-600'} px-4 py-3 rounded-lg transition-all ${
                           isActive
                             ? 'bg-primary/50 text-white border border-primary/50'
                             : 'text-foreground/70 hover:bg-primary/30 hover:text-primary'
@@ -322,18 +357,8 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
             ))}
           </nav>
 
-          {/* Footer */}
-          <div className="absolute  bottom-0 left-0 right-0 p-4 border-t border-border/30">
-            <button 
-            onClick={()=>{
-                 router.push('/login')
-              localStorage.removeItem('clinic');
-           
-            }}
-            className="flex items-center gap-3 cursor-pointer w-full px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/30 hover:text-red-400 transition-all">
-              <LogOut className="w-5 h-5" />
-              <span className="font-medium">Logout</span>
-            </button>
+          {/* Footer - Empty for now, logout moved to SETTINGS group */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border/30">
           </div>
         </div>
 

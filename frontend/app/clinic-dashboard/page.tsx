@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useClinicDashboardView } from '@/components/ClinicDashboardLayout';
 import OverviewView from '@/components/clinic-dashboard/OverviewView';
 import PatientsView from '@/components/clinic-dashboard/PatientsView';
@@ -7,9 +9,19 @@ import PatientListView from '@/components/clinic-dashboard/PatientListView';
 import PatientIntakeForm from '@/components/clinic-dashboard/PatientIntakeForm';
 import AnalyticsView from '@/components/clinic-dashboard/AnalyticsView';
 import SettingsView from '@/components/clinic-dashboard/SettingsView';
+import AIConciergeComingSoon from '@/components/clinic-dashboard/AIConciergeComingSoon';
 
 export default function ClinicDashboardPage() {
+  const router = useRouter();
   const { currentView, setCurrentView, patients, patientsError, patientsLoading} = useClinicDashboardView();
+
+  // Handle logout
+  useEffect(() => {
+    if (currentView === 'logout') {
+      localStorage.removeItem('clinic');
+      router.push('/login');
+    }
+  }, [currentView, router]);
 
   // Render different views based on currentView state
   if (currentView === 'dashboard') {
@@ -52,7 +64,7 @@ export default function ClinicDashboardPage() {
         patients={patients}
         patientsError={patientsError}
         patientsLoading={patientsLoading}
-        onBack={() => setCurrentView('overview')}
+        onBack={() => setCurrentView('dashboard')}
       />
     );
   }
@@ -64,14 +76,30 @@ export default function ClinicDashboardPage() {
         patientsError={patientsError}
         patientsLoading={patientsLoading}
         archivedOnly
-        onBack={() => setCurrentView('overview')}
+        onBack={() => setCurrentView('dashboard')}
       />
     );
   }
 
   if (currentView === 'settings') {
-    return <SettingsView onBack={() => setCurrentView('overview')} />;
+    return <SettingsView onBack={() => setCurrentView('dashboard')} />;
   }
 
-  return <OverviewView onBack={() => setCurrentView('overview')} />;
+  if (currentView === 'subscriptions') {
+    return <AIConciergeComingSoon featureName="Subscriptions" onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'voiceAgents') {
+    return <AIConciergeComingSoon featureName="Voice Agents" onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'knowledgeBase') {
+    return <AIConciergeComingSoon featureName="Knowledge Base" onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'automatedSMS') {
+    return <AIConciergeComingSoon featureName="Automated SMS" onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  return <OverviewView onBack={() => setCurrentView('dashboard')} />;
 }

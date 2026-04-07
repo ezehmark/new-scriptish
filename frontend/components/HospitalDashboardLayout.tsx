@@ -73,15 +73,22 @@ interface Patient {
 }
 
 
-type ViewType = 'overview' | 'referrals' | 'analytics' | 'partners';
+type ViewType = 'overview' | 'referrals' | 'analytics' | 'clinics' | 'partners';
+
+interface Hospital {
+  id?: string;
+  name?: string;
+  npiNumber?: string;
+  [key: string]: any;
+}
 
 interface DashboardContextType {
   currentView: ViewType;
   patientsLoading:boolean;
   patients:any[];
   setCurrentView: (view: ViewType) => void;
-  hospital: object;
-  setHospital: (hospital: any) => void;
+  hospital: Hospital;
+  setHospital: (hospital: Hospital) => void;
   clinics: any[];
   setClinics: (clinics: any[]) => void;
   hospitalId: string;
@@ -100,20 +107,39 @@ export const useDashboardView = () => {
 
 const navItems = [
   {
-    id: 'overview' as ViewType,
-    label: 'Dashboard',
-    icon: Building2,
+    group: 'PATIENTS',
+    items: [
+      {
+        id: 'overview' as ViewType,
+        label: 'Dashboard',
+        icon: Building2,
+      },
+      {
+        id: 'referrals' as ViewType,
+        label: 'Referrals',
+        icon: Users,
+      },
+    ],
   },
   {
-    id: 'referrals' as ViewType,
-    label: 'Referrals',
-    icon: Users,
+    group: 'CLINICS',
+    items: [
+      {
+        id: 'clinics' as ViewType,
+        label: 'Partner Clinics',
+        icon: Building2,
+      },
+    ],
   },
- 
   {
-    id: 'analytics' as ViewType,
-    label: 'Analytics',
-    icon: BarChart3,
+    group: 'ANALYTICS',
+    items: [
+      {
+        id: 'analytics' as ViewType,
+        label: 'Analytics',
+        icon: BarChart3,
+      },
+    ],
   },
 ];
 
@@ -121,7 +147,7 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('overview');
-  const [hospital, setHospital] = useState({});
+  const [hospital, setHospital] = useState<Hospital>({});
   const [clinics, setClinics] = useState<any[]>([]);
   const[loadingClinics,setLoadingClinics]=useState(false);
   const [hospitalId, setHospitalId] = useState('');
@@ -311,29 +337,37 @@ export default function HospitalDashboardLayout({ children }: HospitalDashboardL
           </div>
 
           {/* Navigation */}
-          <nav className="p-4 space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = currentView === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setCurrentView(item.id);
-                    setIsSidebarOpen(false);
-                  }}
-
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    isActive
-                      ? 'bg-primary/50 text-white border border-primary/50'
-                      : 'text-foreground/70 hover:bg-primary/30 hover:text-primary'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              );
-            })}
+          <nav className="p-4 space-y-6">
+            {navItems.map((group) => (
+              <div key={group.group}>
+                <p className="text-xs font-bold text-primary/50 uppercase tracking-wider px-4 mb-2">
+                  {group.group}
+                </p>
+                <div className="space-y-2">
+                  {group.items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = currentView === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setCurrentView(item.id);
+                          setIsSidebarOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-primary/50 text-white border border-primary/50'
+                            : 'text-foreground/70 hover:bg-primary/30 hover:text-primary'
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* Footer */}
