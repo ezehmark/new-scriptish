@@ -339,6 +339,7 @@ export default function ClinicDashboardLayout({ children }: ClinicDashboardLayou
                         key={item.id}
                         onClick={() => {
                           setCurrentView(item.id);
+                          localStorage.setItem('dashboardview',item.id);
                           setIsSidebarOpen(false);
                         }}
                         className={`w-full flex items-center gap-3 ${item.id=='logout'&&'bg-red-500/20 text-red-600'} px-4 py-3 rounded-lg transition-all ${
