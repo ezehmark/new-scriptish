@@ -83,13 +83,13 @@ export default function AIConciergeComingSoon({ featureName, onBack }: AIConcier
           {featureName}
           <br />
           <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            AI Features
+          Features
           </span>
         </h1>
 
         {/* Subtext */}
         <p className="text-foreground/70 text-base leading-relaxed mb-10">
-          Advanced AI-powered features are coming soon. We're building powerful tools to help you deliver better patient care.
+          These advanced features are coming soon. We're building powerful tools to help you deliver better patient care.
         </p>
 
         {/* Divider */}
